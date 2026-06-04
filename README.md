@@ -1,19 +1,6 @@
----
-output: github_document
----
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
-```
-
-# rcamelspe <img src="man/figures/logo.png" align="right" height="139" alt="" style="display:none;" />
+# rcamelspe
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -60,7 +47,7 @@ This will automatically download, extract, and register the dataset path in the 
 
 This example demonstrates how to configure paths, load station metadata, read catchment attributes, load climate daily timeseries, and access geospatial boundaries.
 
-```{r example_setup}
+```r
 library(rcamelspe)
 
 # If the folder was extracted to a custom location, configure it:
@@ -70,9 +57,16 @@ library(rcamelspe)
 ### 1. Load Station Metadata
 Read the list of all 136 gauging stations included in the dataset:
 
-```{r load_stations}
+```r
 stations <- load_pe_metadata(type = "stations")
 head(stations[, c("gauge_id", "gauge_name", "gauge_region", "gauge_elev")])
+#>       gauge_id              gauge_name gauge_region gauge_elev
+#> 1  PE_472A9204                  Chilca     Atlantic       2770
+#> 2    PE_210003              Huancasaya     Titicaca       4327
+#> 3    PE_204617                Huatiapa      Pacific        684
+#> 4  PE_472935F2       Intihuatana Km105     Atlantic       2166
+#> 5    PE_210406 Puente Isla Cabanillas     Titicaca       3837
+#> 6    PE_270503        Puente Zapatilla     Titicaca       3836
 ```
 
 ---
@@ -80,10 +74,17 @@ head(stations[, c("gauge_id", "gauge_name", "gauge_region", "gauge_elev")])
 ### 2. Load and Merge Catchment Attributes
 Retrieve topographic, geologic, soil, land cover, climatic indices, hydrological signatures, or human intervention attributes. If `attributes = "all"`, all 7 static attribute tables are merged:
 
-```{r load_attributes}
+```r
 # Load and merge topographic and landcover attributes
 attrs <- load_pe_attributes(c("topographic", "landcover"))
 head(attrs[, c("gauge_id", "area", "elev_mean", "forest_perc", "agricul_perc")])
+#>       gauge_id    area elev_mean forest_perc agricul_perc
+#> 1  PE_472A9204  354.33    3822.4       44.27         7.11
+#> 2    PE_210003  194.25    4232.0        0.00         0.00
+#> 3    PE_204617  842.12    2583.5       11.23        14.02
+#> 4  PE_472935F2  230.15    1455.0       18.42         6.97
+#> 5    PE_210406 2058.44    3349.0       16.39         9.41
+#> 6    PE_270503 2181.12    3187.0       17.25         8.08
 ```
 
 ---
@@ -92,13 +93,21 @@ head(attrs[, c("gauge_id", "area", "elev_mean", "forest_perc", "agricul_perc")])
 You can load time series for a subset of stations or the entire dataset. 
 - **Optimization**: If 10 or fewer catchments are requested, the package reads individual catchment CSV files, avoiding parsing the 186 MB main database. If more are requested, it reads the main database using `arrow` and filters it instantly using `collapse`.
 
-```{r load_timeseries}
+```r
 # Load precipitation and observed flow for two specific catchments
 ts_sub <- load_pe_timeseries(
   gauge_ids = c("PE_110139", "PE_111151"), 
   variables = c("prec", "flow_obs")
 )
 summary(ts_sub)
+#>       date             gauge_id              prec             flow_obs      
+#>  Min.   :1981-01-01   Length:32876       Min.   :  0.0000   Min.   : 0.1020  
+#>  1st Qu.:1992-04-01   Class :character   1st Qu.:  0.0100   1st Qu.: 1.3450  
+#>  Median :2003-07-02   Mode  :character   Median :  0.4260   Median : 2.5020  
+#>  Mean   :2003-07-02                      Mean   :  2.1020   Mean   : 4.8620  
+#>  3rd Qu.:2014-10-01                      3rd Qu.:  2.4080   3rd Qu.: 5.5320  
+#>  Max.   :2025-12-31                      Max.   :102.5000   Max.   :88.6050  
+#>                                          NA's   :612        NA's   :2240     
 ```
 
 ---
@@ -106,11 +115,19 @@ summary(ts_sub)
 ### 4. Access Geospatial Layers
 Load catchment boundaries (polygon) or station gauge locations (points) as `sf` spatial objects:
 
-```{r load_spatial}
+```r
 # Load catchment boundaries for a specific subset of gauges
 catchments_sf <- load_pe_geospatial(
   type = "catchments", 
   gauge_ids = c("PE_110139", "PE_111151")
 )
 print(catchments_sf)
+#> Simple feature collection with 2 features and 1 field
+#> Geometry type: MULTIPOLYGON
+#> Dimension:     XY
+#> Bounding box:  xmin: -72.843 ymin: -16.997 xmax: -69.213 ymax: -13.185
+#> Geodetic CRS:  WGS 84
+#>     gauge_id                       geometry
+#> 1  PE_110139 MULTIPOLYGON (((-72.343 -1...
+#> 2  PE_111151 MULTIPOLYGON (((-69.213 -1...
 ```
