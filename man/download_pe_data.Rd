@@ -5,15 +5,16 @@
 \title{Download the CAMELS-PE dataset from Zenodo}
 \usage{
 download_pe_data(
-  dest_dir = "data-raw",
+  dest_dir = tools::R_user_dir("rcamelspe", which = "data"),
   unzip = TRUE,
   overwrite = FALSE,
   quiet = FALSE
 )
 }
 \arguments{
-\item{dest_dir}{Character. Destination directory where the dataset should be saved.
-Defaults to "data-raw".}
+\item{dest_dir}{Character. Destination directory where the dataset should be
+saved. Defaults to the persistent user data directory
+(\code{tools::R_user_dir("rcamelspe", "data")}).}
 
 \item{unzip}{Logical. Should the downloaded file be unzipped? Default is \code{TRUE}.}
 
@@ -31,7 +32,10 @@ and optionally unzips it in the destination folder.
 }
 \examples{
 \dontrun{
-# Download and unzip to a local folder
+# Download and unzip to the persistent user data folder
+download_pe_data()
+
+# Or download to a custom folder
 download_pe_data(dest_dir = "data-raw")
 }
 }

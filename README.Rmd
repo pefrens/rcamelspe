@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# rcamelspe <img src="man/figures/logo.png" align="right" height="139" alt="" style="display:none;" />
+# rcamelspe
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -32,7 +32,13 @@ To manage the volume of records (over 2.2 million rows of daily climate data), t
 
 ## Installation
 
-You can install the development version of `rcamelspe` from GitHub with:
+You can install the released version of `rcamelspe` from CRAN with:
+
+```r
+install.packages("rcamelspe")
+```
+
+And the development version from GitHub with:
 
 ```r
 # install.packages("devtools")

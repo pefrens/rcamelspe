@@ -89,6 +89,14 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
 
       # Filter columns if variables specified
       if (!is.null(variables)) {
+        missing_vars <- setdiff(keep_cols, names(df))
+        if (length(missing_vars) > 0) {
+          warning(
+            "Some columns were not found in the timeseries file for station ", gid, ": ",
+            paste(missing_vars, collapse = ", "),
+            call. = FALSE
+          )
+        }
         df <- df[, intersect(names(df), keep_cols), drop = FALSE]
       }
 
@@ -112,14 +120,31 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
     if (use_arrow) {
       # Use arrow to read and select columns directly to save memory
       if (!is.null(variables)) {
-        df <- arrow::read_csv_arrow(main_file, col_select = tidyselect::all_of(keep_cols))
+        df <- arrow::read_csv_arrow(main_file, col_select = tidyselect::any_of(keep_cols))
+        df <- as.data.frame(df)
+        missing_vars <- setdiff(keep_cols, names(df))
+        if (length(missing_vars) > 0) {
+          warning(
+            "Some columns were not found in the main timeseries file: ",
+            paste(missing_vars, collapse = ", "),
+            call. = FALSE
+          )
+        }
       } else {
         df <- arrow::read_csv_arrow(main_file)
+        df <- as.data.frame(df)
       }
-      df <- as.data.frame(df)
     } else {
       df <- utils::read.csv(main_file, stringsAsFactors = FALSE)
       if (!is.null(variables)) {
+        missing_vars <- setdiff(keep_cols, names(df))
+        if (length(missing_vars) > 0) {
+          warning(
+            "Some columns were not found in the main timeseries file: ",
+            paste(missing_vars, collapse = ", "),
+            call. = FALSE
+          )
+        }
         df <- df[, intersect(names(df), keep_cols), drop = FALSE]
       }
     }

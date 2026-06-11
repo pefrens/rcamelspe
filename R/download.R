@@ -3,8 +3,9 @@
 #' Downloads the CAMELS-PE dataset zip file from the Zenodo repository
 #' and optionally unzips it in the destination folder.
 #'
-#' @param dest_dir Character. Destination directory where the dataset should be saved.
-#'   Defaults to "data-raw".
+#' @param dest_dir Character. Destination directory where the dataset should be
+#'   saved. Defaults to the persistent user data directory
+#'   (`tools::R_user_dir("rcamelspe", "data")`).
 #' @param unzip Logical. Should the downloaded file be unzipped? Default is `TRUE`.
 #' @param overwrite Logical. If the destination files already exist, should they be overwritten?
 #'   Default is `FALSE`.
@@ -15,10 +16,16 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Download and unzip to a local folder
+#' # Download and unzip to the persistent user data folder
+#' download_pe_data()
+#'
+#' # Or download to a custom folder
 #' download_pe_data(dest_dir = "data-raw")
 #' }
-download_pe_data <- function(dest_dir = "data-raw", unzip = TRUE, overwrite = FALSE, quiet = FALSE) {
+download_pe_data <- function(dest_dir = tools::R_user_dir("rcamelspe", which = "data"),
+                             unzip = TRUE,
+                             overwrite = FALSE,
+                             quiet = FALSE) {
   url <- "https://zenodo.org/api/records/20058779/files/CAMELS-PE_v1.0.zip/content"
 
   if (!dir.exists(dest_dir)) {
