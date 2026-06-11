@@ -24,7 +24,7 @@ plot_pe_attribute_map(
 
 \item{na_color}{Character string. Color for missing values. Default is \code{"grey80"}.}
 
-\item{...}{Additional arguments passed to \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} for catchments.}
+\item{...}{Additional arguments passed to \code{ggplot2::geom_sf()} for catchments.}
 }
 \value{
 A \code{ggplot} object.

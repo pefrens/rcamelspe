@@ -134,7 +134,7 @@ if (has_data) {
 Finalmente, graficamos el mapa temático de las cuencas hidrográficas coloreándolas de acuerdo a la región a la que fueron asignadas por el algoritmo.
 
 ```{r plot_map, fig.align='center'}
-if (has_data) {
+
   ggplot(catchments_regions) +
     geom_sf(aes(fill = region), color = "grey40", linewidth = 0.15) +
     scale_fill_brewer(palette = "Set2", name = "Región Hidroclimática\n(Grupo)") +
@@ -152,9 +152,7 @@ if (has_data) {
       legend.position = "right",
       panel.grid.major = element_line(color = "grey90", linewidth = 0.2)
     )
-} else {
-  message("El dataset no está disponible, omitiendo gráfico.")
-}
+
 ```
 
 ---

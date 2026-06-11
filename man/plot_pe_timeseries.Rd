@@ -26,10 +26,10 @@ before plotting. If \code{NULL}, all available gauges are plotted.}
 
 \item{facet}{Logical value. If \code{TRUE} (default), creates one panel per gauge ID.}
 
-\item{scales}{Character string. Scales passed to \code{\link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}}.
+\item{scales}{Character string. Scales passed to \code{ggplot2::facet_wrap()}.
 One of \code{"fixed"}, \code{"free"}, \code{"free_x"}, or \code{"free_y"} (default).}
 
-\item{...}{Additional arguments passed to \code{\link[ggplot2:geom_line]{ggplot2::geom_line()}}.}
+\item{...}{Additional arguments passed to \code{ggplot2::geom_line()}.}
 }
 \value{
 A \code{ggplot} object.

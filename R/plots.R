@@ -11,9 +11,9 @@
 #'   before plotting. If `NULL`, all available gauges are plotted.
 #' @param date_col Character string. Name of the date column. Default is `"date"`.
 #' @param facet Logical value. If `TRUE` (default), creates one panel per gauge ID.
-#' @param scales Character string. Scales passed to [ggplot2::facet_wrap()].
+#' @param scales Character string. Scales passed to \code{ggplot2::facet_wrap()}.
 #'   One of `"fixed"`, `"free"`, `"free_x"`, or `"free_y"` (default).
-#' @param ... Additional arguments passed to [ggplot2::geom_line()].
+#' @param ... Additional arguments passed to \code{ggplot2::geom_line()}.
 #'
 #' @return A `ggplot` object.
 #' @export
@@ -136,7 +136,7 @@ plot_pe_timeseries <- function(data,
 #'   plotted.
 #' @param fill Optional character string. Name of a catchment column used to
 #'   fill polygons. If `NULL`, a constant fill is used.
-#' @param ... Additional arguments passed to [ggplot2::geom_sf()].
+#' @param ... Additional arguments passed to \code{ggplot2::geom_sf()}.
 #'
 #' @return A `ggplot` object.
 #' @export
@@ -253,7 +253,7 @@ plot_pe_catchments <- function(catchments,
 #' @param variable Character string. Name of the attribute to visualize.
 #' @param gauges Optional `sf` object with gauge point locations.
 #' @param na_color Character string. Color for missing values. Default is `"grey80"`.
-#' @param ... Additional arguments passed to [ggplot2::geom_sf()] for catchments.
+#' @param ... Additional arguments passed to \code{ggplot2::geom_sf()} for catchments.
 #'
 #' @return A `ggplot` object.
 #' @export

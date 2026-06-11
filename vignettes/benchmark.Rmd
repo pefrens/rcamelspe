@@ -26,12 +26,12 @@ Los siguientes tiempos representan la mediana de ejecución (en segundos) tras 5
 
 | Operación | RCamelsPE (Tidyverse) | rcamelspe (arrow + collapse) | Aceleración (Speedup) |
 | :--- | :---: | :---: | :---: |
-| **Lectura de Metadatos** (`stations.csv`) | 0.0200s | 0.0100s | **2.00x** |
-| **Unión de Atributos** (`type = "all"`) | 0.0800s | 0.0400s | **2.00x** |
-| **Serie de Tiempo (1 cuenca)** | 0.0300s | 0.0200s | **1.50x** |
-| **Serie de Tiempo (10 cuencas)** | 0.2200s | 0.1400s | **1.57x** |
-| **Serie de Tiempo Global** (~180 MB) | 1.4200s | 1.0500s | **1.35x** |
-| **Lectura de Capas Geospatiales** (GPKG) | 0.0200s | 0.0200s | **1.00x** |
+| **Lectura de Metadatos** (`stations.csv`) | 0.0154s | 0.0084s | **1.84x** |
+| **Unión de Atributos** (`type = "all"`) | 0.0913s | 0.0451s | **2.02x** |
+| **Serie de Tiempo (1 cuenca)** | 0.0317s | 0.0156s | **2.03x** |
+| **Serie de Tiempo (10 cuencas)** | 0.2833s | 0.1727s | **1.64x** |
+| **Serie de Tiempo Global** (~180 MB) | 1.4611s | 1.1980s | **1.22x** |
+| **Lectura de Capas Geospatiales** (GPKG) | 0.0167s | 0.0161s | **1.04x** |
 
 ---
 
