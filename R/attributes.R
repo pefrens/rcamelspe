@@ -28,10 +28,10 @@
 #' }
 load_pe_attributes <- function(attributes = "all", gauge_ids = NULL, path = get_camels_pe_path()) {
   if (is.null(path) || !dir.exists(path)) {
-    stop(
-      "CAMELS-PE dataset path not found or invalid. Please download the dataset ",
-      "using `download_pe_data()` or configure it via `set_camels_pe_path()`."
-    )
+    cli::cli_abort(c(
+      "CAMELS-PE dataset path not found or invalid.",
+      "i" = "Please download the dataset using {.fn download_pe_data} or configure it via {.fn set_camels_pe_path}."
+    ))
   }
 
   # Map category aliases from RCamelsPE
@@ -67,7 +67,7 @@ load_pe_attributes <- function(attributes = "all", gauge_ids = NULL, path = get_
     file_path <- file.path(path, "02_attributes", file_name)
 
     if (!file.exists(file_path)) {
-      warning("Attribute file not found: ", file_path)
+      cli::cli_warn("Attribute file not found: {.path {file_path}}")
       next
     }
 

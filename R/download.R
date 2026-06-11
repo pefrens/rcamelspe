@@ -37,7 +37,7 @@ download_pe_data <- function(dest_dir = tools::R_user_dir("rcamelspe", which = "
   # Download the zip file
   if (!file.exists(zip_file) || overwrite) {
     if (!quiet) {
-      message("Downloading CAMELS-PE dataset from Zenodo...")
+      cli::cli_inform("Downloading CAMELS-PE dataset from Zenodo...")
     }
     # Set timeout to a high number to avoid timeouts with large files
     old_timeout <- getOption("timeout")
@@ -52,7 +52,7 @@ download_pe_data <- function(dest_dir = tools::R_user_dir("rcamelspe", which = "
     )
   } else {
     if (!quiet) {
-      message("Zip file already exists. Use overwrite = TRUE to download again.")
+      cli::cli_inform("Zip file already exists. Use {.code overwrite = TRUE} to download again.")
     }
   }
 
@@ -61,12 +61,12 @@ download_pe_data <- function(dest_dir = tools::R_user_dir("rcamelspe", which = "
     expected_dir <- file.path(dest_dir, "CAMELS-PE")
     if (!dir.exists(expected_dir) || overwrite) {
       if (!quiet) {
-        message("Unzipping dataset to ", dest_dir, "...")
+        cli::cli_inform("Unzipping dataset to {.path {dest_dir}}...")
       }
       utils::unzip(zipfile = zip_file, exdir = dest_dir, overwrite = overwrite)
     } else {
       if (!quiet) {
-        message("Extracted directory already exists. Use overwrite = TRUE to extract again.")
+        cli::cli_inform("Extracted directory already exists. Use {.code overwrite = TRUE} to extract again.")
       }
     }
     pe_dir <- expected_dir

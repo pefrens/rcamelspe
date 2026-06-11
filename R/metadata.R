@@ -32,10 +32,10 @@ load_pe_metadata <- function(type = c("stations", "dictionary"),
   type <- match.arg(type)
 
   if (is.null(path) || !dir.exists(path)) {
-    stop(
-      "CAMELS-PE dataset path not found or invalid. Please download the dataset ",
-      "using `download_pe_data()` or configure it via `set_camels_pe_path()`."
-    )
+    cli::cli_abort(c(
+      "CAMELS-PE dataset path not found or invalid.",
+      "i" = "Please download the dataset using {.fn download_pe_data} or configure it via {.fn set_camels_pe_path}."
+    ))
   }
 
   file_name <- switch(
@@ -47,7 +47,7 @@ load_pe_metadata <- function(type = c("stations", "dictionary"),
   file_path <- file.path(path, "01_metadata", file_name)
 
   if (!file.exists(file_path)) {
-    stop("Metadata file not found at: ", file_path)
+    cli::cli_abort("Metadata file not found at: {.path {file_path}}")
   }
 
   # Load efficiently using arrow
@@ -68,11 +68,10 @@ load_pe_metadata <- function(type = c("stations", "dictionary"),
     missing_cols <- setdiff(required_cols, names(df))
 
     if (length(missing_cols) > 0) {
-      stop(
-        "The dictionary file is missing required columns: ",
-        paste(missing_cols, collapse = ", "),
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "The dictionary file is missing required column{?s}.",
+        "x" = "Missing column{?s}: {.field {missing_cols}}"
+      ))
     }
 
     if (!is.null(category)) {

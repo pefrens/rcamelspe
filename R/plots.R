@@ -35,40 +35,40 @@ plot_pe_timeseries <- function(data,
                                ...) {
 
   if (!is.data.frame(data)) {
-    stop("`data` must be a data frame.", call. = FALSE)
+    cli::cli_abort("{.arg data} must be a data frame.")
   }
 
   if (!is.character(variable) || length(variable) != 1L || is.na(variable)) {
-    stop("`variable` must be a single character string.", call. = FALSE)
+    cli::cli_abort("{.arg variable} must be a single character string.")
   }
 
   if (!is.character(date_col) || length(date_col) != 1L || is.na(date_col)) {
-    stop("`date_col` must be a single character string.", call. = FALSE)
+    cli::cli_abort("{.arg date_col} must be a single character string.")
   }
 
   if (!date_col %in% names(data)) {
-    stop("Date column not found in data: ", date_col, call. = FALSE)
+    cli::cli_abort("Date column {.field {date_col}} not found in {.arg data}.")
   }
 
   if (!"gauge_id" %in% names(data)) {
-    stop("Column 'gauge_id' not found in data.", call. = FALSE)
+    cli::cli_abort("Column {.field gauge_id} not found in {.arg data}.")
   }
 
   if (!variable %in% names(data)) {
-    stop("Variable not found in data: ", variable, call. = FALSE)
+    cli::cli_abort("Variable {.field {variable}} not found in {.arg data}.")
   }
 
   if (!is.null(gauge_id) && (!is.character(gauge_id) || anyNA(gauge_id))) {
-    stop("`gauge_id` must be a character vector without NA values or NULL.", call. = FALSE)
+    cli::cli_abort("{.arg gauge_id} must be a character vector without NA values or NULL.")
   }
 
   if (!is.logical(facet) || length(facet) != 1L || is.na(facet)) {
-    stop("`facet` must be TRUE or FALSE.", call. = FALSE)
+    cli::cli_abort("{.arg facet} must be TRUE or FALSE.")
   }
 
   allowed_scales <- c("fixed", "free", "free_x", "free_y")
   if (!is.character(scales) || length(scales) != 1L || is.na(scales) || !scales %in% allowed_scales) {
-    stop("`scales` must be one of: ", paste(allowed_scales, collapse = ", "), call. = FALSE)
+    cli::cli_abort("{.arg scales} must be one of: {.val {allowed_scales}}.")
   }
 
   data <- as.data.frame(data)
@@ -78,17 +78,17 @@ plot_pe_timeseries <- function(data,
   }
 
   if (nrow(data) == 0L) {
-    stop("No data available for the selected `gauge_id`.", call. = FALSE)
+    cli::cli_abort("No data available for the selected {.arg gauge_id}.")
   }
 
   data[[date_col]] <- as.Date(data[[date_col]])
 
   if (anyNA(data[[date_col]])) {
-    stop("Date column contains values that cannot be converted to Date.", call. = FALSE)
+    cli::cli_abort("Date column contains values that cannot be converted to Date.")
   }
 
   if (!is.numeric(data[[variable]])) {
-    stop("`variable` must refer to a numeric column.", call. = FALSE)
+    cli::cli_abort("{.arg variable} must refer to a numeric column.")
   }
 
   data[["gauge_id"]] <- as.character(data[["gauge_id"]])
@@ -154,32 +154,32 @@ plot_pe_catchments <- function(catchments,
                                ...) {
 
   if (!inherits(catchments, "sf")) {
-    stop("`catchments` must be an sf object.", call. = FALSE)
+    cli::cli_abort("{.arg catchments} must be an {.cls sf} object.")
   }
 
   if (!is.null(gauges) && !inherits(gauges, "sf")) {
-    stop("`gauges` must be an sf object.", call. = FALSE)
+    cli::cli_abort("{.arg gauges} must be an {.cls sf} object.")
   }
 
   if (!"gauge_id" %in% names(catchments)) {
-    stop("Column 'gauge_id' not found in catchments.", call. = FALSE)
+    cli::cli_abort("Column {.field gauge_id} not found in {.arg catchments}.")
   }
 
   if (!is.null(gauges) && !"gauge_id" %in% names(gauges)) {
-    stop("Column 'gauge_id' not found in gauges.", call. = FALSE)
+    cli::cli_abort("Column {.field gauge_id} not found in {.arg gauges}.")
   }
 
   if (!is.null(gauge_id) && (!is.character(gauge_id) || length(gauge_id) != 1 || is.na(gauge_id))) {
-    stop("`gauge_id` must be a single character string or NULL.", call. = FALSE)
+    cli::cli_abort("{.arg gauge_id} must be a single character string or NULL.")
   }
 
   if (!is.null(fill)) {
     if (!is.character(fill) || length(fill) != 1 || is.na(fill)) {
-      stop("`fill` must be a single character string or NULL.", call. = FALSE)
+      cli::cli_abort("{.arg fill} must be a single character string or NULL.")
     }
 
     if (!fill %in% names(catchments)) {
-      stop("Fill variable not found in catchments: ", fill, call. = FALSE)
+      cli::cli_abort("Fill variable {.field {fill}} not found in {.arg catchments}.")
     }
   }
 
@@ -198,7 +198,7 @@ plot_pe_catchments <- function(catchments,
   }
 
   if (nrow(catchments) == 0) {
-    stop("No catchment available for the selected gauge_id.", call. = FALSE)
+    cli::cli_abort("No catchment available for the selected {.arg gauge_id}.")
   }
 
   if (is.null(fill)) {
@@ -272,35 +272,35 @@ plot_pe_attribute_map <- function(catchments,
                                   ...) {
 
   if (!inherits(catchments, "sf")) {
-    stop("`catchments` must be an sf object.", call. = FALSE)
+    cli::cli_abort("{.arg catchments} must be an {.cls sf} object.")
   }
 
   if (!is.data.frame(attributes)) {
-    stop("`attributes` must be a data frame.", call. = FALSE)
+    cli::cli_abort("{.arg attributes} must be a data frame.")
   }
 
   if (!is.character(variable) || length(variable) != 1) {
-    stop("`variable` must be a single character string.", call. = FALSE)
+    cli::cli_abort("{.arg variable} must be a single character string.")
   }
 
   if (!"gauge_id" %in% names(catchments)) {
-    stop("`catchments` must contain a 'gauge_id' column.", call. = FALSE)
+    cli::cli_abort("{.arg catchments} must contain a {.field gauge_id} column.")
   }
 
   if (!"gauge_id" %in% names(attributes)) {
-    stop("`attributes` must contain a 'gauge_id' column.", call. = FALSE)
+    cli::cli_abort("{.arg attributes} must contain a {.field gauge_id} column.")
   }
 
   if (!variable %in% names(attributes)) {
-    stop("Variable not found in attributes: ", variable, call. = FALSE)
+    cli::cli_abort("Variable {.field {variable}} not found in {.arg attributes}.")
   }
 
   if (!is.null(gauges) && !inherits(gauges, "sf")) {
-    stop("`gauges` must be an sf object.", call. = FALSE)
+    cli::cli_abort("{.arg gauges} must be an {.cls sf} object.")
   }
 
   if (!is.character(na_color) || length(na_color) != 1) {
-    stop("`na_color` must be a single character string.", call. = FALSE)
+    cli::cli_abort("{.arg na_color} must be a single character string.")
   }
 
   catchments_min <- catchments[, "gauge_id"]
@@ -312,7 +312,7 @@ plot_pe_attribute_map <- function(catchments,
   }
 
   if (!variable %in% names(data)) {
-    stop("Variable not found after join: ", variable, call. = FALSE)
+    cli::cli_abort("Variable {.field {variable}} not found after join.")
   }
 
   p <- ggplot2::ggplot() +

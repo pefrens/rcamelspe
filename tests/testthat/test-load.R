@@ -19,7 +19,7 @@ find_test_data_path <- function() {
 
 scrub_path <- function(lines) {
   # Replace absolute/relative path to dummy-path with [path]/dummy-path
-  lines <- gsub("does not exist: .*dummy-path", "does not exist: [path]/dummy-path", lines)
+  lines <- gsub("does not exist: ['\"`]?.*dummy-path['\"`]?", "does not exist: [path]/dummy-path", lines)
   lines
 }
 

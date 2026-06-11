@@ -18,6 +18,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports: 
     arrow,
+    cli,
     collapse (>= 2.0.0),
     sf,
     tidyselect,

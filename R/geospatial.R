@@ -25,10 +25,10 @@ load_pe_geospatial <- function(type = c("catchments", "gauges"), gauge_ids = NUL
   type <- match.arg(type)
 
   if (is.null(path) || !dir.exists(path)) {
-    stop(
-      "CAMELS-PE dataset path not found or invalid. Please download the dataset ",
-      "using `download_pe_data()` or configure it via `set_camels_pe_path()`."
-    )
+    cli::cli_abort(c(
+      "CAMELS-PE dataset path not found or invalid.",
+      "i" = "Please download the dataset using {.fn download_pe_data} or configure it via {.fn set_camels_pe_path}."
+    ))
   }
 
   file_name <- switch(
@@ -40,7 +40,7 @@ load_pe_geospatial <- function(type = c("catchments", "gauges"), gauge_ids = NUL
   file_path <- file.path(path, "04_geospatial", file_name)
 
   if (!file.exists(file_path)) {
-    stop("Geospatial file not found at: ", file_path)
+    cli::cli_abort("Geospatial file not found at: {.path {file_path}}")
   }
 
   sf_obj <- sf::st_read(file_path, quiet = TRUE)

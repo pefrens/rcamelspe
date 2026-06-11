@@ -14,7 +14,7 @@ set_camels_pe_path <- function(path) {
   if (!is.null(path)) {
     path <- normalizePath(path, mustWork = FALSE)
     if (!dir.exists(path)) {
-      warning("The provided CAMELS-PE path does not exist: ", path, call. = FALSE)
+      cli::cli_warn("The provided CAMELS-PE path does not exist: {.path {path}}")
     } else {
       required_dirs <- c(
         "01_metadata",
@@ -24,10 +24,8 @@ set_camels_pe_path <- function(path) {
       )
       missing_dirs <- required_dirs[!dir.exists(file.path(path, required_dirs))]
       if (length(missing_dirs) > 0) {
-        warning(
-          "The following required CAMELS-PE folders are missing: ",
-          paste(missing_dirs, collapse = ", "),
-          call. = FALSE
+        cli::cli_warn(
+          "The following required CAMELS-PE folder{?s} {?is/are} missing: {.file {missing_dirs}}"
         )
       }
     }

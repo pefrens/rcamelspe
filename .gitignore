@@ -5,3 +5,7 @@
 .DS_Store
 .quarto
 docs
+raw-data/
+.agent/
+*.tar.gz
+*.Rcheck/
