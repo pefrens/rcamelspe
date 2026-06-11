@@ -192,3 +192,11 @@ print(catchments_sf)
 - [`set_camels_pe_path()`](https://pefrens.github.io/rcamelspe/reference/set_camels_pe_path.md)
   : Set the path to the CAMELS-PE dataset
 
+# Articles
+
+### All vignettes
+
+- [Benchmark de Eficiencia: rcamelspe vs
+  RCamelsPE](https://pefrens.github.io/rcamelspe/articles/benchmark.md):
+- [Regionalización Hidroclimática de Cuencas en el
+  Perú](https://pefrens.github.io/rcamelspe/articles/regionalization.md):
