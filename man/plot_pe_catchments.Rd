@@ -24,7 +24,7 @@ plotted.}
 \item{fill}{Optional character string. Name of a catchment column used to
 fill polygons. If \code{NULL}, a constant fill is used.}
 
-\item{...}{Additional arguments passed to \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}}.}
+\item{...}{Additional arguments passed to \code{ggplot2::geom_sf()}.}
 }
 \value{
 A \code{ggplot} object.
