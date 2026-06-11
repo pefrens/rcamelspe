@@ -7,7 +7,7 @@ optionally unzips it in the destination folder.
 
 ``` r
 download_pe_data(
-  dest_dir = "data-raw",
+  dest_dir = tools::R_user_dir("rcamelspe", which = "data"),
   unzip = TRUE,
   overwrite = FALSE,
   quiet = FALSE
@@ -19,7 +19,8 @@ download_pe_data(
 - dest_dir:
 
   Character. Destination directory where the dataset should be saved.
-  Defaults to "data-raw".
+  Defaults to the persistent user data directory
+  (`tools::R_user_dir("rcamelspe", "data")`).
 
 - unzip:
 
@@ -42,7 +43,10 @@ Character. The directory path where the dataset is located or extracted.
 
 ``` r
 if (FALSE) { # \dontrun{
-# Download and unzip to a local folder
+# Download and unzip to the persistent user data folder
+download_pe_data()
+
+# Or download to a custom folder
 download_pe_data(dest_dir = "data-raw")
 } # }
 ```

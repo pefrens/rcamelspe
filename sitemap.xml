@@ -7,6 +7,7 @@
 <url><loc>https://pefrens.github.io/rcamelspe/SUPPORT.html</loc></url>
 <url><loc>https://pefrens.github.io/rcamelspe/authors.html</loc></url>
 <url><loc>https://pefrens.github.io/rcamelspe/index.html</loc></url>
+<url><loc>https://pefrens.github.io/rcamelspe/news/index.html</loc></url>
 <url><loc>https://pefrens.github.io/rcamelspe/reference/download_pe_data.html</loc></url>
 <url><loc>https://pefrens.github.io/rcamelspe/reference/get_camels_pe_path.html</loc></url>
 <url><loc>https://pefrens.github.io/rcamelspe/reference/index.html</loc></url>
@@ -14,6 +15,9 @@
 <url><loc>https://pefrens.github.io/rcamelspe/reference/load_pe_geospatial.html</loc></url>
 <url><loc>https://pefrens.github.io/rcamelspe/reference/load_pe_metadata.html</loc></url>
 <url><loc>https://pefrens.github.io/rcamelspe/reference/load_pe_timeseries.html</loc></url>
+<url><loc>https://pefrens.github.io/rcamelspe/reference/plot_pe_attribute_map.html</loc></url>
+<url><loc>https://pefrens.github.io/rcamelspe/reference/plot_pe_catchments.html</loc></url>
+<url><loc>https://pefrens.github.io/rcamelspe/reference/plot_pe_timeseries.html</loc></url>
 <url><loc>https://pefrens.github.io/rcamelspe/reference/set_camels_pe_path.html</loc></url>
 </urlset>
 

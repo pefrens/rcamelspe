@@ -6,7 +6,10 @@ Retrieves the path to the CAMELS-PE dataset. It looks up:
 
 2.  The environment variable `CAMELS_PE_PATH`.
 
-3.  Default search paths in the current working directory
+3.  The persistent user data directory
+    (`tools::R_user_dir("rcamelspe", "data")`).
+
+4.  Default search paths in the current working directory
     (`raw-data/CAMELS-PE`, `data-raw/camels-pe`, etc.).
 
 ## Usage

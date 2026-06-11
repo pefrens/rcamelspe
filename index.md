@@ -19,7 +19,14 @@ frame subsetting, selection, binding, and join operations.
 
 ## Installation
 
-You can install the development version of `rcamelspe` from GitHub with:
+You can install the released version of `rcamelspe` from CRAN with:
+
+``` r
+
+install.packages("rcamelspe")
+```
+
+And the development version from GitHub with:
 
 ``` r
 
@@ -70,13 +77,13 @@ Read the list of all 136 gauging stations included in the dataset:
 
 stations <- load_pe_metadata(type = "stations")
 head(stations[, c("gauge_id", "gauge_name", "gauge_region", "gauge_elev")])
-#>       gauge_id              gauge_name gauge_region gauge_elev
-#> 1  PE_472A9204                  Chilca     Atlantic       2770
-#> 2    PE_210003              Huancasaya     Titicaca       4327
-#> 3    PE_204617                Huatiapa      Pacific        684
-#> 4  PE_472935F2       Intihuatana Km105     Atlantic       2166
-#> 5    PE_210406 Puente Isla Cabanillas     Titicaca       3837
-#> 6    PE_270503        Puente Zapatilla     Titicaca       3836
+#>      gauge_id             gauge_name gauge_region gauge_elev
+#> 1 PE_472A9204                 Chilca     Atlantic       2770
+#> 2   PE_210003             Huancasaya     Titicaca       4327
+#> 3   PE_204617               Huatiapa      Pacific        684
+#> 4 PE_472935F2      Intihuatana Km105     Atlantic       2166
+#> 5   PE_210406 Puente Isla Cabanillas     Titicaca       3837
+#> 6   PE_270503       Puente Zapatilla     Titicaca       3836
 ```
 
 ------------------------------------------------------------------------
@@ -92,13 +99,13 @@ hydrological signatures, or human intervention attributes. If
 # Load and merge topographic and landcover attributes
 attrs <- load_pe_attributes(c("topographic", "landcover"))
 head(attrs[, c("gauge_id", "area", "elev_mean", "forest_perc", "agricul_perc")])
-#>       gauge_id    area elev_mean forest_perc agricul_perc
-#> 1  PE_472A9204  354.33    3822.4       44.27         7.11
-#> 2    PE_210003  194.25    4232.0        0.00         0.00
-#> 3    PE_204617  842.12    2583.5       11.23        14.02
-#> 4  PE_472935F2  230.15    1455.0       18.42         6.97
-#> 5    PE_210406 2058.44    3349.0       16.39         9.41
-#> 6    PE_270503 2181.12    3187.0       17.25         8.08
+#>      gauge_id      area elev_mean forest_perc agricul_perc
+#> 1 PE_472A9204  9187.868  4210.225       1.389       20.467
+#> 2   PE_210003  2008.790  4659.078       0.050        0.000
+#> 3   PE_204617 13224.802  4213.036       1.373        6.850
+#> 4 PE_472935F2  9576.154  4196.945       1.876       19.801
+#> 5   PE_210406  2867.025  4467.149       0.000       11.748
+#> 6   PE_270503   390.800  3990.867       0.000       61.399
 ```
 
 ------------------------------------------------------------------------
@@ -119,14 +126,14 @@ ts_sub <- load_pe_timeseries(
   variables = c("prec", "flow_obs")
 )
 summary(ts_sub)
-#>       date             gauge_id              prec             flow_obs      
-#>  Min.   :1981-01-01   Length:32876       Min.   :  0.0000   Min.   : 0.1020  
-#>  1st Qu.:1992-04-01   Class :character   1st Qu.:  0.0100   1st Qu.: 1.3450  
-#>  Median :2003-07-02   Mode  :character   Median :  0.4260   Median : 2.5020  
-#>  Mean   :2003-07-02                      Mean   :  2.1020   Mean   : 4.8620  
-#>  3rd Qu.:2014-10-01                      3rd Qu.:  2.4080   3rd Qu.: 5.5320  
-#>  Max.   :2025-12-31                      Max.   :102.5000   Max.   :88.6050  
-#>                                          NA's   :612        NA's   :2240     
+#>       date                 gauge_id          prec            flow_obs     
+#>  Min.   :1981-01-01   Length   :32872   Min.   : 0.0000   Min.   :0.0070  
+#>  1st Qu.:1992-04-01   N.unique :    2   1st Qu.: 0.0430   1st Qu.:0.1280  
+#>  Median :2003-07-02   N.blank  :    0   Median : 0.4595   Median :0.2710  
+#>  Mean   :2003-07-02   Min.nchar:    9   Mean   : 1.8223   Mean   :0.5558  
+#>  3rd Qu.:2014-10-01   Max.nchar:    9   3rd Qu.: 2.4580   3rd Qu.:0.8000  
+#>  Max.   :2025-12-31                     Max.   :33.7110   Max.   :3.9620  
+#>                                                           NAs    :22001
 ```
 
 ------------------------------------------------------------------------
@@ -144,12 +151,18 @@ catchments_sf <- load_pe_geospatial(
   gauge_ids = c("PE_110139", "PE_111151")
 )
 print(catchments_sf)
-#> Simple feature collection with 2 features and 1 field
+#> Simple feature collection with 2 features and 10 fields
 #> Geometry type: MULTIPOLYGON
 #> Dimension:     XY
-#> Bounding box:  xmin: -72.843 ymin: -16.997 xmax: -69.213 ymax: -13.185
+#> Bounding box:  xmin: -81.03042 ymin: -17.99042 xmax: -68.56208 ymax: 0.7970833
 #> Geodetic CRS:  WGS 84
-#>     gauge_id                       geometry
-#> 1  PE_110139 MULTIPOLYGON (((-72.343 -1...
-#> 2  PE_111151 MULTIPOLYGON (((-69.213 -1...
+#>    gauge_id             name       name_cat      area perimeter is_nested
+#> 1 PE_110139            Picoy  Cuenca Huaura  360.5843   98.0372      TRUE
+#> 2 PE_111151 Puente Magdalena Cuenca Chillón 1263.8044  217.0139      TRUE
+#>   downstream_gauge_id upstream_gauge_id nested_group_id nested_group_size
+#> 1         PE_4724966C              NONE     PE_4724966C                 2
+#> 2           PE_212500       PE_47E9F488       PE_212500                 4
+#>                             geom
+#> 1 MULTIPOLYGON (((-76.72625 -...
+#> 2 MULTIPOLYGON (((-76.81875 -...
 ```

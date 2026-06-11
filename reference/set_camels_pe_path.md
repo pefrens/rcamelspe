@@ -23,4 +23,5 @@ Invisible NULL.
 
 ``` r
 set_camels_pe_path("data-raw/CAMELS-PE")
+#> Warning: The provided CAMELS-PE path does not exist: data-raw/CAMELS-PE
 ```

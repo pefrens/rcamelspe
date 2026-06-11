@@ -6,7 +6,11 @@ Loads one or more catchment attribute files and merges them by
 ## Usage
 
 ``` r
-load_pe_attributes(attributes = "all", path = get_camels_pe_path())
+load_pe_attributes(
+  attributes = "all",
+  gauge_ids = NULL,
+  path = get_camels_pe_path()
+)
 ```
 
 ## Arguments
@@ -16,7 +20,13 @@ load_pe_attributes(attributes = "all", path = get_camels_pe_path())
   Character vector. The attributes to load. Can be any combination of
   `"topographic"`, `"climatic"`, `"geologic"`, `"soil"`, `"landcover"`,
   `"intervention"`, and `"signatures"`, or `"all"` (default) to load and
-  merge all attributes.
+  merge all attributes. Aliases `"hydrological"` (for `"signatures"`)
+  and `"human_intervention"` (for `"intervention"`) are also supported.
+
+- gauge_ids:
+
+  Character vector. Optional gauge identifiers to filter the returned
+  attributes. If `NULL`, attributes for all catchments are returned.
 
 - path:
 
@@ -37,5 +47,8 @@ attrs_all <- load_pe_attributes()
 
 # Load only topographic and climatic attributes
 attrs_sub <- load_pe_attributes(c("topographic", "climatic"))
+
+# Load attributes for specific stations
+attrs_sel <- load_pe_attributes(gauge_ids = c("PE_212900", "PE_200907"))
 } # }
 ```

@@ -8,6 +8,9 @@ CAMELS-PE dataset.
 ``` r
 load_pe_metadata(
   type = c("stations", "dictionary"),
+  category = NULL,
+  variable = NULL,
+  file = NULL,
   path = get_camels_pe_path()
 )
 ```
@@ -18,6 +21,21 @@ load_pe_metadata(
 
   Character. Either `"stations"` to load the gauging station metadata or
   `"dictionary"` to load the data dictionary.
+
+- category:
+
+  Character vector or `NULL`. Optional category filter for the
+  dictionary (e.g. `"climatic"`).
+
+- variable:
+
+  Character vector or `NULL`. Optional variable filter for the
+  dictionary (e.g. `"flow_obs"`).
+
+- file:
+
+  Character vector or `NULL`. Optional file filter for the dictionary
+  (e.g. `"stations.csv"`).
 
 - path:
 
@@ -38,5 +56,8 @@ stations <- load_pe_metadata(type = "stations")
 
 # Load data dictionary
 data_dict <- load_pe_metadata(type = "dictionary")
+
+# Load data dictionary filtered by category
+climatic_dict <- load_pe_metadata(type = "dictionary", category = "climatic")
 } # }
 ```
