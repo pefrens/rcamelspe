@@ -13,6 +13,22 @@
 set_camels_pe_path <- function(path) {
   if (!is.null(path)) {
     path <- normalizePath(path, mustWork = FALSE)
+    if (!dir.exists(path)) {
+      cli::cli_warn("The provided CAMELS-PE path does not exist: {.path {path}}")
+    } else {
+      required_dirs <- c(
+        "01_metadata",
+        "02_attributes",
+        "03_timeseries",
+        "04_geospatial"
+      )
+      missing_dirs <- required_dirs[!dir.exists(file.path(path, required_dirs))]
+      if (length(missing_dirs) > 0) {
+        cli::cli_warn(
+          "The following required CAMELS-PE folder{?s} {?is/are} missing: {.file {missing_dirs}}"
+        )
+      }
+    }
   }
   options(rcamelspe.path = path)
   invisible(NULL)
@@ -23,7 +39,9 @@ set_camels_pe_path <- function(path) {
 #' Retrieves the path to the CAMELS-PE dataset. It looks up:
 #' 1. The package option `rcamelspe.path`.
 #' 2. The environment variable `CAMELS_PE_PATH`.
-#' 3. Default search paths in the current working directory (`raw-data/CAMELS-PE`, `data-raw/camels-pe`, etc.).
+#' 3. The persistent user data directory (`tools::R_user_dir("rcamelspe", "data")`).
+#' 4. Default search paths in the current working directory (`raw-data/CAMELS-PE`,
+#'    `data-raw/camels-pe`, etc.).
 #'
 #' @return Character path or `NULL` if not found.
 #' @export
@@ -43,7 +61,16 @@ get_camels_pe_path <- function() {
     return(normalizePath(env_path))
   }
 
-  # 3. Default workspace checks
+  # 3. Persistent user data directory
+  user_dir <- tryCatch(
+    file.path(tools::R_user_dir("rcamelspe", which = "data"), "CAMELS-PE"),
+    error = function(e) NULL
+  )
+  if (!is.null(user_dir) && dir.exists(user_dir)) {
+    return(normalizePath(user_dir))
+  }
+
+  # 4. Default workspace checks
   defaults <- c(
     "raw-data/CAMELS-PE",
     "data-raw/CAMELS-PE",

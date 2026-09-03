@@ -31,10 +31,10 @@
 load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_camels_pe_path(),
                                parse_dates = TRUE, use_arrow = TRUE) {
   if (is.null(path) || !dir.exists(path)) {
-    stop(
-      "CAMELS-PE dataset path not found or invalid. Please download the dataset ",
-      "using `download_pe_data()` or configure it via `set_camels_pe_path()`."
-    )
+    cli::cli_abort(c(
+      "CAMELS-PE dataset path not found or invalid.",
+      "i" = "Please download the dataset using {.fn download_pe_data} or configure it via {.fn set_camels_pe_path}."
+    ))
   }
 
   valid_vars <- c(
@@ -69,7 +69,7 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
     for (gid in gauge_ids) {
       file_path <- file.path(catchment_dir, paste0(gid, ".csv"))
       if (!file.exists(file_path)) {
-        warning("Timeseries file not found for station: ", gid, " at ", file_path)
+        cli::cli_warn("Timeseries file not found for station {.val {gid}} at {.path {file_path}}")
         next
       }
 
@@ -89,6 +89,13 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
 
       # Filter columns if variables specified
       if (!is.null(variables)) {
+        missing_vars <- setdiff(keep_cols, names(df))
+        if (length(missing_vars) > 0) {
+          cli::cli_warn(c(
+            "Some columns were not found in the timeseries file for station {.val {gid}}:",
+            "x" = "Missing column{?s}: {.field {missing_vars}}"
+          ))
+        }
         df <- df[, intersect(names(df), keep_cols), drop = FALSE]
       }
 
@@ -106,20 +113,35 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
     # Read the main timeseries.csv file
     main_file <- file.path(path, "03_timeseries", "timeseries.csv")
     if (!file.exists(main_file)) {
-      stop("Main timeseries file not found at: ", main_file)
+      cli::cli_abort("Main timeseries file not found at: {.path {main_file}}")
     }
 
     if (use_arrow) {
       # Use arrow to read and select columns directly to save memory
       if (!is.null(variables)) {
-        df <- arrow::read_csv_arrow(main_file, col_select = tidyselect::all_of(keep_cols))
+        df <- arrow::read_csv_arrow(main_file, col_select = tidyselect::any_of(keep_cols))
+        df <- as.data.frame(df)
+        missing_vars <- setdiff(keep_cols, names(df))
+        if (length(missing_vars) > 0) {
+          cli::cli_warn(c(
+            "Some columns were not found in the main timeseries file:",
+            "x" = "Missing column{?s}: {.field {missing_vars}}"
+          ))
+        }
       } else {
         df <- arrow::read_csv_arrow(main_file)
+        df <- as.data.frame(df)
       }
-      df <- as.data.frame(df)
     } else {
       df <- utils::read.csv(main_file, stringsAsFactors = FALSE)
       if (!is.null(variables)) {
+        missing_vars <- setdiff(keep_cols, names(df))
+        if (length(missing_vars) > 0) {
+          cli::cli_warn(c(
+            "Some columns were not found in the main timeseries file:",
+            "x" = "Missing column{?s}: {.field {missing_vars}}"
+          ))
+        }
         df <- df[, intersect(names(df), keep_cols), drop = FALSE]
       }
     }

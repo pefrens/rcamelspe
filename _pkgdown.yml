@@ -1,4 +1,49 @@
 url: https://pefrens.github.io/rcamelspe/
+
 template:
   bootstrap: 5
+  bslib:
+    bg: "#FFFFFF"
+    fg: "#2F4156"
+    primary: "#2F4156"
+    secondary: "#567C8D"
+    success: "#567C8D"
+    info: "#567C8D"
+    light: "#F5EFEB"
+    dark: "#2F4156"
+    link-color: "#567C8D"
+    link-hover-color: "#2F4156"
+    navbar-bg: "#2F4156"
+    navbar-light-color: "#FFFFFF"
+    navbar-light-hover-color: "#C8D9E6"
+    navbar-light-active-color: "#FFFFFF"
+    headings-color: "#2F4156"
+    border-radius: "0.5rem"
 
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+
+reference:
+  - title: "Dataset Acquisition and Configuration"
+    desc: "Functions to download, extract, and locate the CAMELS-PE dataset."
+    contents:
+      - download_pe_data
+      - set_camels_pe_path
+      - get_camels_pe_path
+
+  - title: "Data Loading and Subsetting"
+    desc: "High-performance reading of metadata, attributes, daily timeseries, and geospatial layers."
+    contents:
+      - load_pe_metadata
+      - load_pe_attributes
+      - load_pe_timeseries
+      - load_pe_geospatial
+
+  - title: "Visualization and Mapping"
+    desc: "Plotting utilities for hydrometeorological time series and spatial catchment boundaries."
+    contents:
+      - plot_pe_timeseries
+      - plot_pe_catchments
+      - plot_pe_attribute_map

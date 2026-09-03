@@ -19,7 +19,10 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 ## Not run: 
-##D # Download and unzip to a local folder
+##D # Download and unzip to the persistent user data folder
+##D download_pe_data()
+##D 
+##D # Or download to a custom folder
 ##D download_pe_data(dest_dir = "data-raw")
 ## End(Not run)
 
@@ -59,6 +62,9 @@ flush(stderr()); flush(stdout())
 ##D 
 ##D # Load only topographic and climatic attributes
 ##D attrs_sub <- load_pe_attributes(c("topographic", "climatic"))
+##D 
+##D # Load attributes for specific stations
+##D attrs_sel <- load_pe_attributes(gauge_ids = c("PE_212900", "PE_200907"))
 ## End(Not run)
 
 
@@ -103,6 +109,9 @@ flush(stderr()); flush(stdout())
 ##D 
 ##D # Load data dictionary
 ##D data_dict <- load_pe_metadata(type = "dictionary")
+##D 
+##D # Load data dictionary filtered by category
+##D climatic_dict <- load_pe_metadata(type = "dictionary", category = "climatic")
 ## End(Not run)
 
 
@@ -125,6 +134,68 @@ flush(stderr()); flush(stdout())
 ##D 
 ##D # Load only precipitation and observed streamflow for all stations
 ##D ts_sub <- load_pe_timeseries(variables = c("prec", "flow_obs"))
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("plot_pe_attribute_map")
+### * plot_pe_attribute_map
+
+flush(stderr()); flush(stdout())
+
+### Name: plot_pe_attribute_map
+### Title: Plot CAMELS-PE Attribute Map
+### Aliases: plot_pe_attribute_map
+
+### ** Examples
+
+## Not run: 
+##D catchments <- load_pe_geospatial(type = "catchments")
+##D attrs <- load_pe_attributes(attributes = "topographic")
+##D plot_pe_attribute_map(catchments, attrs, variable = "area")
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("plot_pe_catchments")
+### * plot_pe_catchments
+
+flush(stderr()); flush(stdout())
+
+### Name: plot_pe_catchments
+### Title: Plot CAMELS-PE Catchments
+### Aliases: plot_pe_catchments
+
+### ** Examples
+
+## Not run: 
+##D catchments <- load_pe_geospatial(type = "catchments")
+##D gauges <- load_pe_geospatial(type = "gauges")
+##D plot_pe_catchments(catchments, gauges)
+## End(Not run)
+
+
+
+cleanEx()
+nameEx("plot_pe_timeseries")
+### * plot_pe_timeseries
+
+flush(stderr()); flush(stdout())
+
+### Name: plot_pe_timeseries
+### Title: Plot CAMELS-PE Time Series
+### Aliases: plot_pe_timeseries
+
+### ** Examples
+
+## Not run: 
+##D ts <- load_pe_timeseries(
+##D   gauge_ids = c("PE_212900", "PE_200907"),
+##D   variables = c("prec", "flow_obs")
+##D )
+##D plot_pe_timeseries(ts, variable = "flow_obs")
 ## End(Not run)
 
 

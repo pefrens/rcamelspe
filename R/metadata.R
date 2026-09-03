@@ -1,29 +1,35 @@
 #' Load CAMELS-PE metadata
 #'
-#' Loads the gauging station metadata or the data dictionary from the CAMELS-PE dataset.
+#' Loads gauging station metadata or the data dictionary from the CAMELS-PE dataset.
 #'
-#' @param type Character. Either `"stations"` to load the gauging station metadata
+#' @param type Character string. Either `"stations"` to load gauging station metadata
 #'   or `"dictionary"` to load the data dictionary.
 #' @param category Character vector or `NULL`. Optional category filter for the dictionary (e.g. `"climatic"`).
 #' @param variable Character vector or `NULL`. Optional variable filter for the dictionary (e.g. `"flow_obs"`).
 #' @param file Character vector or `NULL`. Optional file filter for the dictionary (e.g. `"stations.csv"`).
-#' @param path Character. Path to the CAMELS-PE dataset directory. If NULL,
-#'   retrieved via [get_camels_pe_path()].
+#' @param path Character string. Path to the CAMELS-PE dataset directory. If `NULL`,
+#'   retrieved automatically via [get_camels_pe_path()].
 #'
-#' @return A data frame (tibble-like) containing the requested metadata.
+#' @return A `data.frame` containing the requested metadata:
+#'   \itemize{
+#'     \item When `type = "stations"`: station metadata including `gauge_id`, `gauge_name`,
+#'       geographic coordinates, elevation, and hydrologic regions.
+#'     \item When `type = "dictionary"`: dictionary entries with columns `folder`, `file`,
+#'       `category`, `variable`, `description`, `unit`, and `source`.
+#'   }
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Load stations metadata
 #' stations <- load_pe_metadata(type = "stations")
+#' head(stations)
 #'
 #' # Load data dictionary
 #' data_dict <- load_pe_metadata(type = "dictionary")
+#' head(data_dict)
 #'
 #' # Load data dictionary filtered by category
-#' climatic_dict <- load_pe_metadata(type = "dictionary", category = "climatic")
-#' }
+#' clim_dict <- load_pe_metadata(type = "dictionary", category = "climatic")
 load_pe_metadata <- function(type = c("stations", "dictionary"),
                              category = NULL,
                              variable = NULL,
@@ -91,4 +97,57 @@ load_pe_metadata <- function(type = c("stations", "dictionary"),
   }
 
   return(df)
+}
+
+#' Read CAMELS-PE station metadata
+#'
+#' Convenience alias for `load_pe_metadata(type = "stations")`, compatible
+#' with the `RCamelsPE` interface.
+#'
+#' @param path Character string. Optional path to the CAMELS-PE root directory.
+#'   If not provided, retrieved automatically via [get_camels_pe_path()].
+#'
+#' @return A `data.frame` containing gauging station metadata.
+#' @export
+#'
+#' @examples
+#' stations <- read_metadata()
+#' head(stations)
+read_metadata <- function(path = get_camels_pe_path()) {
+  load_pe_metadata(type = "stations", path = path)
+}
+
+#' Read CAMELS-PE data dictionary
+#'
+#' Reads the CAMELS-PE data dictionary with optional filters by category,
+#' variable, or source file. Compatible with the `RCamelsPE` interface.
+#'
+#' @param category Character vector or `NULL`. Optional category filter.
+#' @param variable Character vector or `NULL`. Optional variable filter.
+#' @param file Character vector or `NULL`. Optional file filter.
+#' @param path Character string. Optional path to the CAMELS-PE root directory.
+#'   If not provided, retrieved automatically via [get_camels_pe_path()].
+#'
+#' @return A `data.frame` containing the CAMELS-PE data dictionary entries.
+#' @export
+#'
+#' @examples
+#' # Read full dictionary
+#' dict <- read_dictionary()
+#' head(dict)
+#'
+#' # Read dictionary for topographic category
+#' topo_dict <- read_dictionary(category = "topographic")
+#' head(topo_dict)
+read_dictionary <- function(category = NULL,
+                            variable = NULL,
+                            file = NULL,
+                            path = get_camels_pe_path()) {
+  load_pe_metadata(
+    type = "dictionary",
+    category = category,
+    variable = variable,
+    file = file,
+    path = path
+  )
 }

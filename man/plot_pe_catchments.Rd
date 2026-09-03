@@ -2,6 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_pe_catchments}
 \alias{plot_pe_catchments}
+\alias{plot_catchments}
 \title{Plot CAMELS-PE Catchments}
 \usage{
 plot_pe_catchments(
@@ -11,6 +12,8 @@ plot_pe_catchments(
   fill = NULL,
   ...
 )
+
+plot_catchments(catchments, gauges = NULL, gauge_id = NULL, fill = NULL, ...)
 }
 \arguments{
 \item{catchments}{An \code{sf} object with catchment polygons.}
@@ -27,7 +30,7 @@ fill polygons. If \code{NULL}, a constant fill is used.}
 \item{...}{Additional arguments passed to \code{ggplot2::geom_sf()}.}
 }
 \value{
-A \code{ggplot} object.
+A \code{ggplot} object with the spatial catchment geometries.
 }
 \description{
 Creates a map of CAMELS-PE catchments and optionally overlays gauge
@@ -35,9 +38,7 @@ locations. If \code{gauge_id} is provided, only one catchment and its outlet
 are plotted, with the gauge ID shown as a panel header.
 }
 \examples{
-\dontrun{
 catchments <- load_pe_geospatial(type = "catchments")
 gauges <- load_pe_geospatial(type = "gauges")
 plot_pe_catchments(catchments, gauges)
-}
 }

@@ -6,12 +6,21 @@
 \usage{
 load_pe_metadata(
   type = c("stations", "dictionary"),
+  category = NULL,
+  variable = NULL,
+  file = NULL,
   path = get_camels_pe_path()
 )
 }
 \arguments{
 \item{type}{Character. Either \code{"stations"} to load the gauging station metadata
 or \code{"dictionary"} to load the data dictionary.}
+
+\item{category}{Character vector or \code{NULL}. Optional category filter for the dictionary (e.g. \code{"climatic"}).}
+
+\item{variable}{Character vector or \code{NULL}. Optional variable filter for the dictionary (e.g. \code{"flow_obs"}).}
+
+\item{file}{Character vector or \code{NULL}. Optional file filter for the dictionary (e.g. \code{"stations.csv"}).}
 
 \item{path}{Character. Path to the CAMELS-PE dataset directory. If NULL,
 retrieved via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
@@ -29,5 +38,8 @@ stations <- load_pe_metadata(type = "stations")
 
 # Load data dictionary
 data_dict <- load_pe_metadata(type = "dictionary")
+
+# Load data dictionary filtered by category
+climatic_dict <- load_pe_metadata(type = "dictionary", category = "climatic")
 }
 }

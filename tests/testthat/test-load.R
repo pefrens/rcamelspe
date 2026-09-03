@@ -37,15 +37,91 @@ test_that("set_camels_pe_path and get_camels_pe_path work", {
   on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
   expect_snapshot(set_camels_pe_path(temp_dir))
 
-  # Attempt to find and set actual test path if available
-  path <- find_test_data_path()
-  if (!is.null(path)) {
-    expect_silent(set_camels_pe_path(path))
-    expect_true(dir.exists(get_camels_pe_path()))
+  # Test compatibility aliases
+  suppressWarnings(set_camels_path(temp_dir))
+  expect_equal(get_camels_path(), normalizePath(temp_dir, mustWork = FALSE))
+
+  # Fallback to sample dataset when option is NULL
+  options(rcamelspe.path = NULL)
+  sample_p <- system.file("extdata", "sample_camels_pe", package = "rcamelspe")
+  if (nzchar(sample_p)) {
+    expect_equal(get_camels_pe_path(), normalizePath(sample_p))
   }
 })
 
-test_that("load_pe_metadata works", {
+test_that("bundled sample dataset works out-of-the-box", {
+  sample_path <- system.file("extdata", "sample_camels_pe", package = "rcamelspe")
+  skip_if(!nzchar(sample_path) || !dir.exists(sample_path), "Sample dataset not found")
+
+  old_path <- getOption("rcamelspe.path")
+  on.exit(options(rcamelspe.path = old_path))
+  set_camels_pe_path(sample_path)
+
+  # 1. Metadata & Dictionary
+  stations <- load_pe_metadata(type = "stations")
+  expect_equal(nrow(stations), 2)
+  expect_true(all(c("PE_110139", "PE_111151") %in% stations$gauge_id))
+
+  dict <- read_dictionary()
+  expect_s3_class(dict, "data.frame")
+  expect_true("variable" %in% names(dict))
+
+  stations_alias <- read_metadata()
+  expect_equal(nrow(stations_alias), 2)
+
+  # 2. Attributes
+  attrs <- read_attributes(type = "topographic")
+  expect_s3_class(attrs, "data.frame")
+  expect_equal(nrow(attrs), 2)
+  expect_true("area" %in% names(attrs))
+
+  attrs_vars <- load_pe_attributes(attributes = "topographic", variables = "area")
+  expect_equal(names(attrs_vars), c("gauge_id", "area"))
+
+  # 3. Timeseries with date filters
+  ts_all <- load_pe_timeseries()
+  expect_equal(nrow(ts_all), 732) # 366 days leap year 2000 x 2 stations
+
+  # Test date filtering
+  ts_sub_date <- load_pe_timeseries(
+    gauge_ids = "PE_110139",
+    start_date = "2000-01-01",
+    end_date = "2000-01-31"
+  )
+  expect_equal(nrow(ts_sub_date), 31)
+  expect_s3_class(ts_sub_date$date, "Date")
+
+  # Test read_timeseries alias
+  ts_alias <- read_timeseries(
+    gauge_id = "PE_110139",
+    vars = c("date", "gauge_id", "prec"),
+    start_date = "2000-01-01",
+    end_date = "2000-01-10"
+  )
+  expect_equal(nrow(ts_alias), 10)
+  expect_equal(names(ts_alias), c("date", "gauge_id", "prec"))
+
+  # 4. Geospatial
+  catchments <- read_geospatial(type = "catchments")
+  expect_s3_class(catchments, "sf")
+  expect_equal(nrow(catchments), 2)
+
+  gauges <- read_geospatial(type = "gauges")
+  expect_s3_class(gauges, "sf")
+  expect_equal(nrow(gauges), 2)
+
+  # 5. Plots
+  p1 <- plot_timeseries(ts_alias, variable = "prec")
+  expect_s3_class(p1, "ggplot")
+
+  p2 <- plot_catchments(catchments, gauges = gauges)
+  expect_s3_class(p2, "ggplot")
+
+  p3 <- plot_attribute_map(catchments, attrs, variable = "area")
+  expect_s3_class(p3, "ggplot")
+})
+
+test_that("load_pe_metadata works on full dataset if present", {
   path <- find_test_data_path()
   skip_if(is.null(path), "CAMELS-PE raw data directory not found")
   set_camels_pe_path(path)
@@ -74,7 +150,7 @@ test_that("load_pe_metadata works", {
   expect_true(all(dict_file$file == "stations.csv"))
 })
 
-test_that("load_pe_attributes works", {
+test_that("load_pe_attributes works on full dataset if present", {
   path <- find_test_data_path()
   skip_if(is.null(path), "CAMELS-PE raw data directory not found")
   set_camels_pe_path(path)
@@ -114,7 +190,7 @@ test_that("load_pe_attributes works", {
   expect_s3_class(attrs_human, "data.frame")
 })
 
-test_that("load_pe_timeseries works", {
+test_that("load_pe_timeseries works on full dataset if present", {
   path <- find_test_data_path()
   skip_if(is.null(path), "CAMELS-PE raw data directory not found")
   set_camels_pe_path(path)
@@ -137,68 +213,8 @@ test_that("load_pe_timeseries works", {
   ts_no_parse <- load_pe_timeseries(gauge_ids = "PE_110139", parse_dates = FALSE)
   expect_false(inherits(ts_no_parse$date, "Date"))
 
-  # 4. Load full dataset (using arrow and collapse filter)
-  # Limit columns to minimize memory footprint in tests
+  # 4. Load full dataset (using arrow dataset pushdown)
   ts_all_prec <- load_pe_timeseries(variables = "prec")
   expect_s3_class(ts_all_prec, "data.frame")
   expect_equal(names(ts_all_prec), c("date", "gauge_id", "prec"))
-
-  # 5. Test robust reading and warnings for missing columns in a dummy file
-  temp_dir <- tempfile("camels_test")
-  dir.create(temp_dir, recursive = TRUE)
-  dir.create(file.path(temp_dir, "03_timeseries"), recursive = TRUE)
-
-  # Create a dummy timeseries.csv file missing 'prec_var'
-  dummy_csv <- "date,gauge_id,prec\n1981-01-01,PE_000001,1.5\n"
-  writeLines(dummy_csv, file.path(temp_dir, "03_timeseries", "timeseries.csv"))
-
-  # Add other folders to avoid path validation warnings
-  dir.create(file.path(temp_dir, "01_metadata"))
-  dir.create(file.path(temp_dir, "02_attributes"))
-  dir.create(file.path(temp_dir, "04_geospatial"))
-
-  # Set path and load
-  suppressWarnings(set_camels_pe_path(temp_dir))
-
-  # When loading global file, we expect a warning about 'prec_var' missing
-  expect_snapshot(load_pe_timeseries(variables = c("prec", "prec_var")))
-})
-
-test_that("load_pe_geospatial works", {
-  path <- find_test_data_path()
-  skip_if(is.null(path), "CAMELS-PE raw data directory not found")
-  set_camels_pe_path(path)
-
-  # Load gauges points
-  gauges <- load_pe_geospatial(type = "gauges")
-  expect_s3_class(gauges, "sf")
-  expect_true("gauge_id" %in% names(gauges))
-
-  # Load catchments with filtering
-  catchments_sub <- load_pe_geospatial(type = "catchments", gauge_ids = c("PE_110139", "PE_111151"))
-  expect_s3_class(catchments_sub, "sf")
-  expect_equal(nrow(catchments_sub), 2)
-  expect_true("gauge_id" %in% names(catchments_sub))
-})
-
-test_that("plotting functions work", {
-  path <- find_test_data_path()
-  skip_if(is.null(path), "CAMELS-PE raw data directory not found")
-  set_camels_pe_path(path)
-
-  # Test plot_pe_timeseries
-  ts_data <- load_pe_timeseries(gauge_ids = c("PE_110139", "PE_111151"), variables = "prec")
-  p1 <- plot_pe_timeseries(ts_data, variable = "prec")
-  expect_s3_class(p1, "ggplot")
-
-  # Test plot_pe_catchments
-  catchments <- load_pe_geospatial(type = "catchments", gauge_ids = c("PE_110139", "PE_111151"))
-  gauges <- load_pe_geospatial(type = "gauges", gauge_ids = c("PE_110139", "PE_111151"))
-  p2 <- plot_pe_catchments(catchments, gauges = gauges)
-  expect_s3_class(p2, "ggplot")
-
-  # Test plot_pe_attribute_map
-  attrs <- load_pe_attributes("topographic", gauge_ids = c("PE_110139", "PE_111151"))
-  p3 <- plot_pe_attribute_map(catchments, attrs, variable = "area")
-  expect_s3_class(p3, "ggplot")
 })

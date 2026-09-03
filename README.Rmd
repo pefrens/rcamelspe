@@ -20,13 +20,14 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/rcamelspe)](https://CRAN.R-project.org/package=rcamelspe)
 <!-- badges: end -->
 
-The goal of `rcamelspe` is to provide an efficient and user-friendly R interface to download, load, filter, and manage the **CAMELS-PE** (Catchment Attributes and Meteorology for Large-sample Studies - Peru) dataset. 
+The goal of `rcamelspe` is to provide an ultra-fast, computationally efficient, and user-friendly R interface to download, load, filter, and manage the **CAMELS-PE** (Catchment Attributes and Meteorology for Large-sample Studies - Peru) dataset. 
 
 CAMELS-PE includes daily meteorological and hydrological time series, static catchment attributes, and geospatial representations for **136 catchments** distributed across the Pacific, Atlantic, and Titicaca hydrographic regions of Peru.
 
-To manage the volume of records (over 2.2 million rows of daily climate data), the package is designed using:
-- **`arrow`**: for high-performance reading of large files.
-- **`collapse`**: for fast data frame subsetting, selection, binding, and join operations.
+To handle large volumes of records (over 2.2 million rows of daily climate observations and simulations) with maximum speed and minimum memory footprint, the package is engineered using:
+- **`arrow`**: for memory-mapped dataset reading, predicate pushdown (filtering stations and dates directly at the C++ scan level), and zero-overhead column projection.
+- **`collapse`**: for fast C/C++ data frame transformations, grouped calculations, row binding, and relational joins.
+- **`RCamelsPE` compatibility**: full drop-in compatibility and aliases (`read_timeseries()`, `read_attributes()`, `read_metadata()`, `read_dictionary()`, `read_geospatial()`, `set_camels_path()`, `get_camels_path()`).
 
 ---
 
@@ -41,82 +42,105 @@ install.packages("rcamelspe")
 And the development version from GitHub with:
 
 ```r
-# install.packages("devtools")
-devtools::install_github("pefrens/rcamelspe")
+# install.packages("pak")
+pak::pak("pefrens/rcamelspe")
 ```
 
 ---
 
-## Downloading the Dataset
+## Bundled Sample Dataset & Instant Exploration
 
-You can programmatically download and extract the dataset (approx. 120 MB zip, extracting to 186 MB) directly from the Zenodo repository (`https://doi.org/10.5281/zenodo.20058779`):
+`rcamelspe` includes a lightweight, self-contained sample dataset in `inst/extdata/sample_camels_pe` (~120 KB) covering 2 representative catchments (`PE_110139` and `PE_111151`). This allows you to explore all functions immediately after installation without waiting for large downloads.
+
+When you are ready to work with the complete 136-catchment dataset (approx. 120 MB zip, extracting to 186 MB), you can download it directly from Zenodo (DOI: 10.5281/zenodo.20058779):
 
 ```r
 library(rcamelspe)
 
-# Download and extract the dataset to a folder named "data-raw"
-download_pe_data(dest_dir = "data-raw")
+# Download and extract the full dataset to user data directory
+download_pe_data()
 ```
-
-This will automatically download, extract, and register the dataset path in the package session.
 
 ---
 
 ## Quick Start Example
 
-This example demonstrates how to configure paths, load station metadata, read catchment attributes, load climate daily timeseries, and access geospatial boundaries.
-
 ```{r example_setup}
 library(rcamelspe)
-
-# If the folder was extracted to a custom location, configure it:
-# set_camels_pe_path("data-raw/CAMELS-PE")
 ```
 
-### 1. Load Station Metadata
-Read the list of all 136 gauging stations included in the dataset:
+### 1. Load Station Metadata & Data Dictionary
+
+Read the gauging station metadata or inspect the unified data dictionary:
 
 ```{r load_stations}
+# Gauging stations
 stations <- load_pe_metadata(type = "stations")
 head(stations[, c("gauge_id", "gauge_name", "gauge_region", "gauge_elev")])
+
+# Data dictionary
+dict <- read_dictionary(category = "climatic")
+head(dict[, c("variable", "description", "unit")])
 ```
 
 ---
 
 ### 2. Load and Merge Catchment Attributes
-Retrieve topographic, geologic, soil, land cover, climatic indices, hydrological signatures, or human intervention attributes. If `attributes = "all"`, all 7 static attribute tables are merged:
+
+Retrieve topographic, geologic, soil, land cover, climatic indices, hydrological signatures, or human intervention attributes:
 
 ```{r load_attributes}
-# Load and merge topographic and landcover attributes
+# Load merged topographic and landcover attributes
 attrs <- load_pe_attributes(c("topographic", "landcover"))
-head(attrs[, c("gauge_id", "area", "elev_mean", "forest_perc", "agricul_perc")])
+head(attrs[, c("gauge_id", "area", "elev_mean", "forest_perc")])
 ```
 
 ---
 
-### 3. Loading daily timeseries (Highly Optimized)
-You can load time series for a subset of stations or the entire dataset. 
-- **Optimization**: If 10 or fewer catchments are requested, the package reads individual catchment CSV files, avoiding parsing the 186 MB main database. If more are requested, it reads the main database using `arrow` and filters it instantly using `collapse`.
+### 3. Load Daily Time Series (Highly Optimized)
+
+Load time series for specific catchments, filter by date range, and select only required variables at scan time:
 
 ```{r load_timeseries}
-# Load precipitation and observed flow for two specific catchments
-ts_sub <- load_pe_timeseries(
-  gauge_ids = c("PE_110139", "PE_111151"), 
-  variables = c("prec", "flow_obs")
+# Load precipitation and observed streamflow with date filter
+ts_data <- load_pe_timeseries(
+  gauge_ids = "PE_110139", 
+  variables = c("prec", "flow_obs"),
+  start_date = "2000-01-01",
+  end_date = "2000-06-30"
 )
-summary(ts_sub)
+head(ts_data)
 ```
 
 ---
 
-### 4. Access Geospatial Layers
-Load catchment boundaries (polygon) or station gauge locations (points) as `sf` spatial objects:
+### 4. Access Geospatial Layers & Plotting
+
+Load catchment boundaries and station locations as `sf` objects, and plot them:
 
 ```{r load_spatial}
-# Load catchment boundaries for a specific subset of gauges
-catchments_sf <- load_pe_geospatial(
-  type = "catchments", 
-  gauge_ids = c("PE_110139", "PE_111151")
-)
-print(catchments_sf)
+# Catchment boundaries
+catchments <- load_pe_geospatial(type = "catchments")
+gauges <- load_pe_geospatial(type = "gauges")
+
+# Plot time series
+p_ts <- plot_pe_timeseries(ts_data, variable = "prec")
+
+# Plot catchments with gauge overlays
+p_map <- plot_pe_catchments(catchments, gauges = gauges)
+```
+
+---
+
+### 5. Full Drop-in Compatibility with `RCamelsPE`
+
+Existing scripts written for `RCamelsPE` run without any modifications:
+
+```r
+# Compatible syntax:
+stations <- read_metadata()
+dict     <- read_dictionary(category = "topographic")
+attrs    <- read_attributes(type = "topographic")
+ts       <- read_timeseries(gauge_id = "PE_110139", vars = c("date", "prec", "flow_obs"))
+spatial  <- read_geospatial(type = "catchments")
 ```

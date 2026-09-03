@@ -2,23 +2,30 @@
 % Please edit documentation in R/paths.R
 \name{get_camels_pe_path}
 \alias{get_camels_pe_path}
+\alias{get_camels_path}
 \title{Get the path to the CAMELS-PE dataset}
 \usage{
 get_camels_pe_path()
+
+get_camels_path()
 }
 \value{
-Character path or \code{NULL} if not found.
+Character string containing the directory path where the dataset is located,
+or \code{NULL} if no valid path is found.
 }
 \description{
-Retrieves the path to the CAMELS-PE dataset. It looks up:
+Retrieves the path to the CAMELS-PE dataset directory. It looks up paths in
+the following order of precedence:
 \enumerate{
 \item The package option \code{rcamelspe.path}.
 \item The environment variable \code{CAMELS_PE_PATH}.
 \item The persistent user data directory (\code{tools::R_user_dir("rcamelspe", "data")}).
 \item Default search paths in the current working directory (\code{raw-data/CAMELS-PE},
-\code{data-raw/camels-pe}, etc.).
+\code{data-raw/CAMELS-PE}, etc.).
+\item The bundled minimal sample dataset in \code{inst/extdata/sample_camels_pe}.
 }
 }
 \examples{
-get_camels_pe_path()
+camels_path <- get_camels_pe_path()
+is.character(camels_path)
 }

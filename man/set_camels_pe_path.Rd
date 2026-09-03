@@ -2,20 +2,24 @@
 % Please edit documentation in R/paths.R
 \name{set_camels_pe_path}
 \alias{set_camels_pe_path}
+\alias{set_camels_path}
 \title{Set the path to the CAMELS-PE dataset}
 \usage{
 set_camels_pe_path(path)
+
+set_camels_path(path)
 }
 \arguments{
-\item{path}{Character. Path to the CAMELS-PE dataset directory.}
+\item{path}{Character string. Path to the CAMELS-PE dataset directory.}
 }
 \value{
-Invisible NULL.
+Invisible \code{NULL}. Called for its side effect of setting the dataset path.
 }
 \description{
 Sets the path to the directory containing the CAMELS-PE dataset.
-The path is stored in the package options.
+The path is stored in the package session options.
 }
 \examples{
-set_camels_pe_path("data-raw/CAMELS-PE")
+sample_path <- system.file("extdata", "sample_camels_pe", package = "rcamelspe")
+set_camels_pe_path(sample_path)
 }

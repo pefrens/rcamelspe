@@ -5,6 +5,10 @@
 #' @param attributes Character vector. The attributes to load. Can be any combination of
 #'   `"topographic"`, `"climatic"`, `"geologic"`, `"soil"`, `"landcover"`, `"intervention"`,
 #'   and `"signatures"`, or `"all"` (default) to load and merge all attributes.
+#'   Aliases `"hydrological"` (for `"signatures"`) and `"human_intervention"` (for `"intervention"`)
+#'   are also supported.
+#' @param gauge_ids Character vector. Optional gauge identifiers to filter the returned attributes.
+#'   If `NULL`, attributes for all catchments are returned.
 #' @param path Character. Path to the CAMELS-PE dataset directory. If NULL,
 #'   retrieved via [get_camels_pe_path()].
 #'
@@ -18,14 +22,21 @@
 #'
 #' # Load only topographic and climatic attributes
 #' attrs_sub <- load_pe_attributes(c("topographic", "climatic"))
+#'
+#' # Load attributes for specific stations
+#' attrs_sel <- load_pe_attributes(gauge_ids = c("PE_212900", "PE_200907"))
 #' }
-load_pe_attributes <- function(attributes = "all", path = get_camels_pe_path()) {
+load_pe_attributes <- function(attributes = "all", gauge_ids = NULL, path = get_camels_pe_path()) {
   if (is.null(path) || !dir.exists(path)) {
-    stop(
-      "CAMELS-PE dataset path not found or invalid. Please download the dataset ",
-      "using `download_pe_data()` or configure it via `set_camels_pe_path()`."
-    )
+    cli::cli_abort(c(
+      "CAMELS-PE dataset path not found or invalid.",
+      "i" = "Please download the dataset using {.fn download_pe_data} or configure it via {.fn set_camels_pe_path}."
+    ))
   }
+
+  # Map category aliases from RCamelsPE
+  attributes[attributes == "hydrological"] <- "signatures"
+  attributes[attributes == "human_intervention"] <- "intervention"
 
   valid_attrs <- c(
     "topographic", "climatic", "geologic", "soil",
@@ -56,7 +67,7 @@ load_pe_attributes <- function(attributes = "all", path = get_camels_pe_path()) 
     file_path <- file.path(path, "02_attributes", file_name)
 
     if (!file.exists(file_path)) {
-      warning("Attribute file not found: ", file_path)
+      cli::cli_warn("Attribute file not found: {.path {file_path}}")
       next
     }
 
@@ -84,6 +95,11 @@ load_pe_attributes <- function(attributes = "all", path = get_camels_pe_path()) 
         verbose = FALSE
       )
     }
+  }
+
+  # Filter by gauge_ids if provided
+  if (!is.null(gauge_ids) && nrow(merged_df) > 0) {
+    merged_df <- collapse::fsubset(merged_df, gauge_id %in% gauge_ids)
   }
 
   return(merged_df)

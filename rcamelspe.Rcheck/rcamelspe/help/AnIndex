@@ -4,4 +4,7 @@ load_pe_attributes	load_pe_attributes
 load_pe_geospatial	load_pe_geospatial
 load_pe_metadata	load_pe_metadata
 load_pe_timeseries	load_pe_timeseries
+plot_pe_attribute_map	plot_pe_attribute_map
+plot_pe_catchments	plot_pe_catchments
+plot_pe_timeseries	plot_pe_timeseries
 set_camels_pe_path	set_camels_pe_path

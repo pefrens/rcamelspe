@@ -1,32 +1,40 @@
 #' Load CAMELS-PE catchment attributes
 #'
 #' Loads one or more catchment attribute files and merges them by `gauge_id`.
+#' High-performance implementation using 'arrow' and 'collapse'.
 #'
-#' @param attributes Character vector. The attributes to load. Can be any combination of
+#' @param attributes Character vector. The attribute groups to load. Can be any combination of
 #'   `"topographic"`, `"climatic"`, `"geologic"`, `"soil"`, `"landcover"`, `"intervention"`,
-#'   and `"signatures"`, or `"all"` (default) to load and merge all attributes.
+#'   and `"signatures"`, or `"all"` (default) to load and merge all attribute tables.
 #'   Aliases `"hydrological"` (for `"signatures"`) and `"human_intervention"` (for `"intervention"`)
 #'   are also supported.
 #' @param gauge_ids Character vector. Optional gauge identifiers to filter the returned attributes.
 #'   If `NULL`, attributes for all catchments are returned.
-#' @param path Character. Path to the CAMELS-PE dataset directory. If NULL,
-#'   retrieved via [get_camels_pe_path()].
+#' @param variables Character vector or `NULL`. Optional variable names to retain in the returned
+#'   table. If `NULL`, all variables in the selected attribute groups are returned.
+#' @param path Character string. Path to the CAMELS-PE dataset directory. If `NULL`,
+#'   retrieved automatically via [get_camels_pe_path()].
 #'
-#' @return A data frame containing the merged attributes.
+#' @return A `data.frame` containing the merged catchment attributes with `gauge_id`
+#'   as primary identifier.
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Load all attributes merged
 #' attrs_all <- load_pe_attributes()
+#' head(attrs_all)
 #'
 #' # Load only topographic and climatic attributes
 #' attrs_sub <- load_pe_attributes(c("topographic", "climatic"))
+#' head(attrs_sub)
 #'
 #' # Load attributes for specific stations
-#' attrs_sel <- load_pe_attributes(gauge_ids = c("PE_212900", "PE_200907"))
-#' }
-load_pe_attributes <- function(attributes = "all", gauge_ids = NULL, path = get_camels_pe_path()) {
+#' attrs_sel <- load_pe_attributes(gauge_ids = c("PE_110139", "PE_111151"))
+#' attrs_sel
+load_pe_attributes <- function(attributes = "all",
+                               gauge_ids = NULL,
+                               variables = NULL,
+                               path = get_camels_pe_path()) {
   if (is.null(path) || !dir.exists(path)) {
     cli::cli_abort(c(
       "CAMELS-PE dataset path not found or invalid.",
@@ -75,6 +83,11 @@ load_pe_attributes <- function(attributes = "all", gauge_ids = NULL, path = get_
     df <- arrow::read_csv_arrow(file_path)
     df <- as.data.frame(df)
 
+    # Filter by gauge_ids early to minimize join overhead
+    if (!is.null(gauge_ids) && nrow(df) > 0) {
+      df <- collapse::fsubset(df, gauge_id %in% gauge_ids)
+    }
+
     loaded_dfs[[attr]] <- df
   }
 
@@ -97,10 +110,43 @@ load_pe_attributes <- function(attributes = "all", gauge_ids = NULL, path = get_
     }
   }
 
-  # Filter by gauge_ids if provided
-  if (!is.null(gauge_ids) && nrow(merged_df) > 0) {
-    merged_df <- collapse::fsubset(merged_df, gauge_id %in% gauge_ids)
+  # Select specific variables if requested (always keep gauge_id)
+  if (!is.null(variables)) {
+    target_cols <- unique(c("gauge_id", variables))
+    keep_cols <- intersect(target_cols, names(merged_df))
+    merged_df <- collapse::fselect(merged_df, keep_cols)
   }
 
   return(merged_df)
+}
+
+#' Read CAMELS-PE catchment attributes
+#'
+#' Compatibility alias matching the `RCamelsPE::read_attributes()` interface,
+#' powered by the high-performance 'arrow' and 'collapse' backend of `rcamelspe`.
+#'
+#' @param type Character string. Attribute group to read. One of
+#'   `"topographic"`, `"climatic"`, `"hydrological"`, `"landcover"`,
+#'   `"geologic"`, `"soil"`, `"human_intervention"`, or `"all"`. Default is `"all"`.
+#' @param gauge_id Character vector or `NULL`. Optional gauge identifiers.
+#' @param vars Character vector or `NULL`. Optional variable names to retain.
+#' @param path Character string. Optional path to the CAMELS-PE root directory.
+#'
+#' @return A `data.frame` with CAMELS-PE catchment attributes.
+#' @export
+#'
+#' @examples
+#' # Read all attributes using RCamelsPE compatible syntax
+#' attrs <- read_attributes(type = "topographic")
+#' head(attrs)
+read_attributes <- function(type = "all",
+                            gauge_id = NULL,
+                            vars = NULL,
+                            path = get_camels_pe_path()) {
+  load_pe_attributes(
+    attributes = type,
+    gauge_ids = gauge_id,
+    variables = vars,
+    path = path
+  )
 }

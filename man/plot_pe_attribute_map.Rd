@@ -2,9 +2,19 @@
 % Please edit documentation in R/plots.R
 \name{plot_pe_attribute_map}
 \alias{plot_pe_attribute_map}
+\alias{plot_attribute_map}
 \title{Plot CAMELS-PE Attribute Map}
 \usage{
 plot_pe_attribute_map(
+  catchments,
+  attributes,
+  variable,
+  gauges = NULL,
+  na_color = "grey80",
+  ...
+)
+
+plot_attribute_map(
   catchments,
   attributes,
   variable,
@@ -27,7 +37,7 @@ plot_pe_attribute_map(
 \item{...}{Additional arguments passed to \code{ggplot2::geom_sf()} for catchments.}
 }
 \value{
-A \code{ggplot} object.
+A \code{ggplot} object visualizing the attribute map.
 }
 \description{
 Creates a thematic map of CAMELS-PE catchments using a selected attribute.
@@ -35,9 +45,7 @@ The function joins attribute data with catchment geometries by \code{gauge_id}
 using \code{collapse::join} and returns a \code{ggplot} object.
 }
 \examples{
-\dontrun{
 catchments <- load_pe_geospatial(type = "catchments")
 attrs <- load_pe_attributes(attributes = "topographic")
 plot_pe_attribute_map(catchments, attrs, variable = "area")
-}
 }

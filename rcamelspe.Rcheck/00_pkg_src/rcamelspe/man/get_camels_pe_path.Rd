@@ -14,7 +14,9 @@ Retrieves the path to the CAMELS-PE dataset. It looks up:
 \enumerate{
 \item The package option \code{rcamelspe.path}.
 \item The environment variable \code{CAMELS_PE_PATH}.
-\item Default search paths in the current working directory (\code{raw-data/CAMELS-PE}, \code{data-raw/camels-pe}, etc.).
+\item The persistent user data directory (\code{tools::R_user_dir("rcamelspe", "data")}).
+\item Default search paths in the current working directory (\code{raw-data/CAMELS-PE},
+\code{data-raw/camels-pe}, etc.).
 }
 }
 \examples{

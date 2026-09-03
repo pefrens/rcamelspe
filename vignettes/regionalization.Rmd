@@ -92,12 +92,15 @@ if (has_data) {
   # Estandarizar atributos
   scaled_data <- scale(data_clustering[, clustering_vars])
   
-  # Ejecutar algoritmo K-means con 3 centros y múltiples reinicios aleatorios
+  # Ejecutar algoritmo K-means si hay suficientes cuencas, o partición adaptativa
   set.seed(123) # Para reproducibilidad
-  kmeans_res <- kmeans(scaled_data, centers = 3, nstart = 25)
-  
-  # Añadir la asignación de clúster (región) como un factor
-  data_clustering$region <- as.factor(kmeans_res$cluster)
+  if (nrow(data_clustering) >= 3) {
+    k_centers <- min(3, nrow(data_clustering))
+    kmeans_res <- kmeans(scaled_data, centers = k_centers, nstart = 25)
+    data_clustering$region <- as.factor(kmeans_res$cluster)
+  } else {
+    data_clustering$region <- as.factor(seq_len(nrow(data_clustering)))
+  }
   
   # Contar cuántas cuencas pertenecen a cada región
   table(data_clustering$region)

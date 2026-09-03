@@ -7,37 +7,44 @@
 load_pe_attributes(
   attributes = "all",
   gauge_ids = NULL,
+  variables = NULL,
   path = get_camels_pe_path()
 )
 }
 \arguments{
-\item{attributes}{Character vector. The attributes to load. Can be any combination of
+\item{attributes}{Character vector. The attribute groups to load. Can be any combination of
 \code{"topographic"}, \code{"climatic"}, \code{"geologic"}, \code{"soil"}, \code{"landcover"}, \code{"intervention"},
-and \code{"signatures"}, or \code{"all"} (default) to load and merge all attributes.
+and \code{"signatures"}, or \code{"all"} (default) to load and merge all attribute tables.
 Aliases \code{"hydrological"} (for \code{"signatures"}) and \code{"human_intervention"} (for \code{"intervention"})
 are also supported.}
 
 \item{gauge_ids}{Character vector. Optional gauge identifiers to filter the returned attributes.
 If \code{NULL}, attributes for all catchments are returned.}
 
-\item{path}{Character. Path to the CAMELS-PE dataset directory. If NULL,
-retrieved via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
+\item{variables}{Character vector or \code{NULL}. Optional variable names to retain in the returned
+table. If \code{NULL}, all variables in the selected attribute groups are returned.}
+
+\item{path}{Character string. Path to the CAMELS-PE dataset directory. If \code{NULL},
+retrieved automatically via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
 }
 \value{
-A data frame containing the merged attributes.
+A \code{data.frame} containing the merged catchment attributes with \code{gauge_id}
+as primary identifier.
 }
 \description{
 Loads one or more catchment attribute files and merges them by \code{gauge_id}.
+High-performance implementation using 'arrow' and 'collapse'.
 }
 \examples{
-\dontrun{
 # Load all attributes merged
 attrs_all <- load_pe_attributes()
+head(attrs_all)
 
 # Load only topographic and climatic attributes
 attrs_sub <- load_pe_attributes(c("topographic", "climatic"))
+head(attrs_sub)
 
 # Load attributes for specific stations
-attrs_sel <- load_pe_attributes(gauge_ids = c("PE_212900", "PE_200907"))
-}
+attrs_sel <- load_pe_attributes(gauge_ids = c("PE_110139", "PE_111151"))
+attrs_sel
 }

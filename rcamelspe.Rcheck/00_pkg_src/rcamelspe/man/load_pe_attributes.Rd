@@ -4,12 +4,21 @@
 \alias{load_pe_attributes}
 \title{Load CAMELS-PE catchment attributes}
 \usage{
-load_pe_attributes(attributes = "all", path = get_camels_pe_path())
+load_pe_attributes(
+  attributes = "all",
+  gauge_ids = NULL,
+  path = get_camels_pe_path()
+)
 }
 \arguments{
 \item{attributes}{Character vector. The attributes to load. Can be any combination of
 \code{"topographic"}, \code{"climatic"}, \code{"geologic"}, \code{"soil"}, \code{"landcover"}, \code{"intervention"},
-and \code{"signatures"}, or \code{"all"} (default) to load and merge all attributes.}
+and \code{"signatures"}, or \code{"all"} (default) to load and merge all attributes.
+Aliases \code{"hydrological"} (for \code{"signatures"}) and \code{"human_intervention"} (for \code{"intervention"})
+are also supported.}
+
+\item{gauge_ids}{Character vector. Optional gauge identifiers to filter the returned attributes.
+If \code{NULL}, attributes for all catchments are returned.}
 
 \item{path}{Character. Path to the CAMELS-PE dataset directory. If NULL,
 retrieved via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
@@ -27,5 +36,8 @@ attrs_all <- load_pe_attributes()
 
 # Load only topographic and climatic attributes
 attrs_sub <- load_pe_attributes(c("topographic", "climatic"))
+
+# Load attributes for specific stations
+attrs_sel <- load_pe_attributes(gauge_ids = c("PE_212900", "PE_200907"))
 }
 }

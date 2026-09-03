@@ -2,6 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_pe_timeseries}
 \alias{plot_pe_timeseries}
+\alias{plot_timeseries}
 \title{Plot CAMELS-PE Time Series}
 \usage{
 plot_pe_timeseries(
@@ -11,6 +12,18 @@ plot_pe_timeseries(
   date_col = "date",
   facet = TRUE,
   scales = "free_y",
+  line_color = "#2F4156",
+  ...
+)
+
+plot_timeseries(
+  data,
+  variable = "flow_obs",
+  gauge_id = NULL,
+  date_col = "date",
+  facet = TRUE,
+  scales = "free_y",
+  line_color = "#2F4156",
   ...
 )
 }
@@ -20,7 +33,7 @@ plot_pe_timeseries(
 \item{variable}{Character string. Name of the variable to plot. Default is \code{"flow_obs"}.}
 
 \item{gauge_id}{Optional character vector. Gauge IDs used to filter the data
-before plotting. If \code{NULL}, all available gauges are plotted.}
+before plotting. If \code{NULL}, all available gauges in \code{data} are plotted.}
 
 \item{date_col}{Character string. Name of the date column. Default is \code{"date"}.}
 
@@ -29,23 +42,22 @@ before plotting. If \code{NULL}, all available gauges are plotted.}
 \item{scales}{Character string. Scales passed to \code{ggplot2::facet_wrap()}.
 One of \code{"fixed"}, \code{"free"}, \code{"free_x"}, or \code{"free_y"} (default).}
 
+\item{line_color}{Character string. Line color for the time series. Default is \code{"#2F4156"} (Navy).}
+
 \item{...}{Additional arguments passed to \code{ggplot2::geom_line()}.}
 }
 \value{
-A \code{ggplot} object.
+A \code{ggplot} visualization object representing the time series.
 }
 \description{
 Creates a time series plot for one CAMELS-PE variable, such as precipitation,
 observed streamflow, simulated streamflow, or temperature. The function
-returns a \code{ggplot} object, so it can be further customized using standard
-\code{ggplot2} layers.
+returns a \code{ggplot} object, styled with the project color palette.
 }
 \examples{
-\dontrun{
 ts <- load_pe_timeseries(
-  gauge_ids = c("PE_212900", "PE_200907"),
-  variables = c("prec", "flow_obs")
+  gauge_ids = "PE_110139",
+  variables = c("prec", "flow_sim")
 )
-plot_pe_timeseries(ts, variable = "flow_obs")
-}
+plot_pe_timeseries(ts, variable = "prec")
 }

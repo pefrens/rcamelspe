@@ -27,8 +27,13 @@ Type 'q()' to quit R.
 > library(rcamelspe)
 > 
 > test_check("rcamelspe")
-[ FAIL 0 | WARN 0 | SKIP 0 | PASS 36 ]
+[ FAIL 0 | WARN 0 | SKIP 2 | PASS 49 ]
+
+══ Skipped tests (2) ═══════════════════════════════════════════════════════════
+• On CRAN (2): 'test-load.R:26:1', 'test-load.R:117:1'
+
+[ FAIL 0 | WARN 0 | SKIP 2 | PASS 49 ]
 > 
 > proc.time()
    user  system elapsed 
-   2.32    0.64    3.09 
+   3.21    0.92    4.09 

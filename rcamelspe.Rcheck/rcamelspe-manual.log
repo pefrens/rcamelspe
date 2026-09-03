@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.6.3)  3 JUN 2026 23:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.6.9)  10 JUN 2026 23:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -319,87 +319,106 @@ Package hyperref Info: Link coloring ON on input line 8.
 \@outlinefile=\write4
 \openout4 = `Rd2.out'.
 
-LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 21.
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 25.
  (c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-LaTeX Font Info:    Trying to load font information for T1+zi4 on input line 32.
+LaTeX Font Info:    Trying to load font information for T1+zi4 on input line 33.
  (c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/inconsolata/t1zi4.fd
 File: t1zi4.fd 2018/01/14 T1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 10.0pt on input line 32.
- (./Rd2.toc
-LaTeX Font Info:    Trying to load font information for U+msa on input line 1.
+(Font)              scaled to size 10.0pt on input line 33.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 33.
  (c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 1.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 33.
  (c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-))
+) (./Rd2.toc [1
+
+
+{c:/Users/PC/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}{c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}])
 \tf@toc=\write5
 \openout5 = `Rd2.toc'.
 
- [1
 
+Overfull \hbox (8.17918pt too wide) in paragraph at lines 64--67
+\T1/ptm/m/n/10 the per-sis-tent user data di-rec-tory ([]\T1/zi4/m/n/10 tools::R_user_dir("rcamelspe", "data")[]\T1/ptm/m/n/10 ). 
+ []
 
-{c:/Users/PC/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}{c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}]
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 72.
-
-Overfull \hbox (26.39888pt too wide) in paragraph at lines 88--89
+(Font)              scaled to size 9.0pt on input line 82.
+[2]
+Overfull \hbox (26.39888pt too wide) in paragraph at lines 102--104
 []\T1/ptm/m/n/10 Default search paths in the cur-rent work-ing di-rec-tory ([]\T1/zi4/m/n/10 raw-data/CAMELS-PE[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 data-raw/camels-pe[]\T1/ptm/m/n/10 ,
  []
 
-[2]
-Overfull \hbox (16.34872pt too wide) in paragraph at lines 123--126
+
+Overfull \hbox (16.34872pt too wide) in paragraph at lines 142--147
 []\T1/ptm/m/n/10 Character vec-tor. The at-tributes to load. Can be any com-bi-na-tion of []\T1/zi4/m/n/10 "topographic"[]\T1/ptm/m/n/10 ,
  []
 
 
-Overfull \hbox (38.49094pt too wide) in paragraph at lines 123--126
+Overfull \hbox (38.49094pt too wide) in paragraph at lines 142--147
 []\T1/zi4/m/n/10 "climatic"[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "geologic"[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "soil"[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "landcover"[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "intervention"[]\T1/ptm/m/n/10 , and []\T1/zi4/m/n/10 "signatures"[]\T1/ptm/m/n/10 ,
  []
 
 [3]
-Overfull \hbox (14.2791pt too wide) in paragraph at lines 167--169
+Overfull \hbox (14.2791pt too wide) in paragraph at lines 194--196
 []\T1/ptm/m/n/10 Character. Ei-ther []\T1/zi4/m/n/10 "catchments" []\T1/ptm/m/n/10 to load catch-ment bound-ary poly-gons or []\T1/zi4/m/n/10 "gauges"
  []
 
 [4]
-Overfull \hbox (17.79868pt too wide) in paragraph at lines 211--213
+Overfull \hbox (17.79868pt too wide) in paragraph at lines 241--243
 []\T1/ptm/m/n/10 Character. Ei-ther []\T1/zi4/m/n/10 "stations" []\T1/ptm/m/n/10 to load the gaug-ing sta-tion meta-data or []\T1/zi4/m/n/10 "dictionary"
  []
 
 
-Overfull \hbox (23.00847pt too wide) in paragraph at lines 260--264
-\T1/ptm/m/n/10 fault), all vari-ables are loaded. Al-lowed vari-ables: []\T1/zi4/m/n/10 "prec"[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "prec_var"[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "flow_obs"[]\T1/ptm/m/n/10 ,
+Overfull \hbox (24.68848pt too wide) in paragraph at lines 244--245
+[]\T1/ptm/m/n/10 Character vec-tor or []\T1/zi4/m/n/10 NULL[]\T1/ptm/m/n/10 . Op-tional cat-e-gory fil-ter for the dic-tio-nary (e.g. []\T1/zi4/m/n/10 "climatic"[]\T1/ptm/m/n/10 ). 
+ []
+
+
+Overfull \hbox (22.36827pt too wide) in paragraph at lines 246--247
+[]\T1/ptm/m/n/10 Character vec-tor or []\T1/zi4/m/n/10 NULL[]\T1/ptm/m/n/10 . Op-tional vari-able fil-ter for the dic-tio-nary (e.g. []\T1/zi4/m/n/10 "flow_obs"[]\T1/ptm/m/n/10 ). 
+ []
+
+
+Overfull \hbox (23.18848pt too wide) in paragraph at lines 248--249
+[]\T1/ptm/m/n/10 Character vec-tor or []\T1/zi4/m/n/10 NULL[]\T1/ptm/m/n/10 . Op-tional file fil-ter for the dic-tio-nary (e.g. []\T1/zi4/m/n/10 "stations.csv"[]\T1/ptm/m/n/10 ). 
  []
 
 [5]
-No file Rd2.ind.
-[6] (./Rd2.aux)
+Overfull \hbox (23.00847pt too wide) in paragraph at lines 299--303
+\T1/ptm/m/n/10 fault), all vari-ables are loaded. Al-lowed vari-ables: []\T1/zi4/m/n/10 "prec"[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "prec_var"[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "flow_obs"[]\T1/ptm/m/n/10 ,
+ []
+
+[6] [7] [8] [9] (./Rd2.ind [10] [11
+
+
+]) (./Rd2.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-05-26>
  ***********
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
-(rerunfilecheck)             Checksum: 387C6EFC9F60EF209732A08A21833093;1124.
+(rerunfilecheck)             Checksum: 52D7F2A52FBB7E40403C68A7D1240820;1703.
  ) 
 Here is how much of TeX's memory you used:
- 10371 strings out of 469157
- 158993 string characters out of 5458087
- 572683 words of memory out of 5000000
- 39161 multiletter control sequences out of 15000+600000
- 659986 words of font info for 79 fonts, out of 8000000 for 9000
+ 10409 strings out of 469157
+ 159565 string characters out of 5458933
+ 574657 words of memory out of 5000000
+ 39168 multiletter control sequences out of 15000+600000
+ 661093 words of font info for 80 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 91i,5n,95p,333b,746s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 91i,6n,95p,255b,778s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb><c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/urw/times/utmb8a.pfb><c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><c:/Users/PC/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (6 pages, 83013 bytes).
+Output written on Rd2.pdf (11 pages, 94024 bytes).
 PDF statistics:
- 159 PDF objects out of 1000 (max. 8388607)
- 139 compressed objects within 2 object streams
- 60 named destinations out of 1000 (max. 500000)
- 57 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 243 PDF objects out of 1000 (max. 8388607)
+ 217 compressed objects within 3 object streams
+ 88 named destinations out of 1000 (max. 500000)
+ 89 words of extra memory for PDF output out of 10000 (max. 10000000)
 

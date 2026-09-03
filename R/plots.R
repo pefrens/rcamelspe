@@ -2,36 +2,35 @@
 #'
 #' Creates a time series plot for one CAMELS-PE variable, such as precipitation,
 #' observed streamflow, simulated streamflow, or temperature. The function
-#' returns a `ggplot` object, so it can be further customized using standard
-#' `ggplot2` layers.
+#' returns a `ggplot` object, styled with the project color palette.
 #'
 #' @param data A data frame containing CAMELS-PE time series.
 #' @param variable Character string. Name of the variable to plot. Default is `"flow_obs"`.
 #' @param gauge_id Optional character vector. Gauge IDs used to filter the data
-#'   before plotting. If `NULL`, all available gauges are plotted.
+#'   before plotting. If `NULL`, all available gauges in `data` are plotted.
 #' @param date_col Character string. Name of the date column. Default is `"date"`.
 #' @param facet Logical value. If `TRUE` (default), creates one panel per gauge ID.
 #' @param scales Character string. Scales passed to \code{ggplot2::facet_wrap()}.
 #'   One of `"fixed"`, `"free"`, `"free_x"`, or `"free_y"` (default).
+#' @param line_color Character string. Line color for the time series. Default is `"#2F4156"` (Navy).
 #' @param ... Additional arguments passed to \code{ggplot2::geom_line()}.
 #'
-#' @return A `ggplot` object.
+#' @return A `ggplot` visualization object representing the time series.
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' ts <- load_pe_timeseries(
-#'   gauge_ids = c("PE_212900", "PE_200907"),
-#'   variables = c("prec", "flow_obs")
+#'   gauge_ids = "PE_110139",
+#'   variables = c("prec", "flow_sim")
 #' )
-#' plot_pe_timeseries(ts, variable = "flow_obs")
-#' }
+#' plot_pe_timeseries(ts, variable = "prec")
 plot_pe_timeseries <- function(data,
                                variable = "flow_obs",
                                gauge_id = NULL,
                                date_col = "date",
                                facet = TRUE,
                                scales = "free_y",
+                               line_color = "#2F4156",
                                ...) {
 
   if (!is.data.frame(data)) {
@@ -102,7 +101,7 @@ plot_pe_timeseries <- function(data,
         y = .data[[variable]]
       )
     ) +
-      ggplot2::geom_line(color = "#636EFA", ...) +
+      ggplot2::geom_line(color = line_color, ...) +
       ggplot2::facet_wrap(ggplot2::vars(.data$gauge_id), scales = scales)
   } else {
     p <- ggplot2::ggplot(
@@ -122,6 +121,10 @@ plot_pe_timeseries <- function(data,
     ggplot2::theme_bw()
 }
 
+#' @rdname plot_pe_timeseries
+#' @export
+plot_timeseries <- plot_pe_timeseries
+
 
 #' Plot CAMELS-PE Catchments
 #'
@@ -138,15 +141,13 @@ plot_pe_timeseries <- function(data,
 #'   fill polygons. If `NULL`, a constant fill is used.
 #' @param ... Additional arguments passed to \code{ggplot2::geom_sf()}.
 #'
-#' @return A `ggplot` object.
+#' @return A `ggplot` object with the spatial catchment geometries.
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' catchments <- load_pe_geospatial(type = "catchments")
 #' gauges <- load_pe_geospatial(type = "gauges")
 #' plot_pe_catchments(catchments, gauges)
-#' }
 plot_pe_catchments <- function(catchments,
                                gauges = NULL,
                                gauge_id = NULL,
@@ -205,9 +206,9 @@ plot_pe_catchments <- function(catchments,
     p <- ggplot2::ggplot() +
       ggplot2::geom_sf(
         data = catchments,
-        fill = "grey90",
-        color = "grey40",
-        linewidth = 0.2,
+        fill = "#F5EFEB",
+        color = "#567C8D",
+        linewidth = 0.3,
         ...
       )
   } else {
@@ -215,8 +216,8 @@ plot_pe_catchments <- function(catchments,
       ggplot2::geom_sf(
         data = catchments,
         ggplot2::aes(fill = .data[[fill]]),
-        color = "grey40",
-        linewidth = 0.2,
+        color = "#567C8D",
+        linewidth = 0.3,
         ...
       ) +
       ggplot2::scale_fill_viridis_c(na.value = "grey80") +
@@ -227,8 +228,8 @@ plot_pe_catchments <- function(catchments,
     p <- p +
       ggplot2::geom_sf(
         data = gauges,
-        size = 1.5,
-        color = "black"
+        size = 2,
+        color = "#2F4156"
       )
   }
 
@@ -240,6 +241,10 @@ plot_pe_catchments <- function(catchments,
     ggplot2::theme_bw() +
     ggplot2::labs(x = NULL, y = NULL)
 }
+
+#' @rdname plot_pe_catchments
+#' @export
+plot_catchments <- plot_pe_catchments
 
 
 #' Plot CAMELS-PE Attribute Map
@@ -255,15 +260,13 @@ plot_pe_catchments <- function(catchments,
 #' @param na_color Character string. Color for missing values. Default is `"grey80"`.
 #' @param ... Additional arguments passed to \code{ggplot2::geom_sf()} for catchments.
 #'
-#' @return A `ggplot` object.
+#' @return A `ggplot` object visualizing the attribute map.
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' catchments <- load_pe_geospatial(type = "catchments")
 #' attrs <- load_pe_attributes(attributes = "topographic")
 #' plot_pe_attribute_map(catchments, attrs, variable = "area")
-#' }
 plot_pe_attribute_map <- function(catchments,
                                   attributes,
                                   variable,
@@ -319,8 +322,8 @@ plot_pe_attribute_map <- function(catchments,
     ggplot2::geom_sf(
       data = data,
       ggplot2::aes(fill = .data[[variable]]),
-      color = "grey70",
-      linewidth = 0.15,
+      color = "#567C8D",
+      linewidth = 0.2,
       ...
     ) +
     ggplot2::scale_fill_viridis_c(
@@ -332,8 +335,8 @@ plot_pe_attribute_map <- function(catchments,
     p <- p +
       ggplot2::geom_sf(
         data = gauges,
-        size = 1,
-        color = "#636EFA"
+        size = 1.5,
+        color = "#2F4156"
       )
   }
 
@@ -341,3 +344,7 @@ plot_pe_attribute_map <- function(catchments,
     ggplot2::labs(x = NULL, y = NULL, fill = variable) +
     ggplot2::theme_bw()
 }
+
+#' @rdname plot_pe_attribute_map
+#' @export
+plot_attribute_map <- plot_pe_attribute_map

@@ -13,7 +13,7 @@ load_pe_metadata(
 )
 }
 \arguments{
-\item{type}{Character. Either \code{"stations"} to load the gauging station metadata
+\item{type}{Character string. Either \code{"stations"} to load gauging station metadata
 or \code{"dictionary"} to load the data dictionary.}
 
 \item{category}{Character vector or \code{NULL}. Optional category filter for the dictionary (e.g. \code{"climatic"}).}
@@ -22,24 +22,30 @@ or \code{"dictionary"} to load the data dictionary.}
 
 \item{file}{Character vector or \code{NULL}. Optional file filter for the dictionary (e.g. \code{"stations.csv"}).}
 
-\item{path}{Character. Path to the CAMELS-PE dataset directory. If NULL,
-retrieved via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
+\item{path}{Character string. Path to the CAMELS-PE dataset directory. If \code{NULL},
+retrieved automatically via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
 }
 \value{
-A data frame (tibble-like) containing the requested metadata.
+A \code{data.frame} containing the requested metadata:
+\itemize{
+\item When \code{type = "stations"}: station metadata including \code{gauge_id}, \code{gauge_name},
+geographic coordinates, elevation, and hydrologic regions.
+\item When \code{type = "dictionary"}: dictionary entries with columns \code{folder}, \code{file},
+\code{category}, \code{variable}, \code{description}, \code{unit}, and \code{source}.
+}
 }
 \description{
-Loads the gauging station metadata or the data dictionary from the CAMELS-PE dataset.
+Loads gauging station metadata or the data dictionary from the CAMELS-PE dataset.
 }
 \examples{
-\dontrun{
 # Load stations metadata
 stations <- load_pe_metadata(type = "stations")
+head(stations)
 
 # Load data dictionary
 data_dict <- load_pe_metadata(type = "dictionary")
+head(data_dict)
 
 # Load data dictionary filtered by category
-climatic_dict <- load_pe_metadata(type = "dictionary", category = "climatic")
-}
+clim_dict <- load_pe_metadata(type = "dictionary", category = "climatic")
 }

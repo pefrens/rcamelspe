@@ -7,6 +7,8 @@
 load_pe_timeseries(
   gauge_ids = NULL,
   variables = NULL,
+  start_date = NULL,
+  end_date = NULL,
   path = get_camels_pe_path(),
   parse_dates = TRUE,
   use_arrow = TRUE
@@ -14,36 +16,53 @@ load_pe_timeseries(
 }
 \arguments{
 \item{gauge_ids}{Character vector. Station/catchment identifiers (e.g. \code{"PE_110139"}).
-If \code{NULL} (default), loads timeseries for all 136 catchments.}
+If \code{NULL} (default), loads timeseries for all available catchments.}
 
-\item{variables}{Character vector. Names of the hydroclimatic variables to select.
+\item{variables}{Character vector. Names of hydroclimatic variables to select.
 If \code{NULL} (default), all variables are loaded. Allowed variables:
 \code{"prec"}, \code{"prec_var"}, \code{"flow_obs"}, \code{"flow_sim"}, \code{"pet"}, \code{"tmin"},
 \code{"tmean"}, \code{"tmax"}, \code{"srad"}, \code{"vprp"}.}
 
-\item{path}{Character. Path to the CAMELS-PE dataset directory. If NULL,
-retrieved via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
+\item{start_date}{Optional character string or Date object (\code{"YYYY-MM-DD"}).
+Start date for temporal filtering.}
+
+\item{end_date}{Optional character string or Date object (\code{"YYYY-MM-DD"}).
+End date for temporal filtering.}
+
+\item{path}{Character string. Path to the CAMELS-PE dataset directory. If \code{NULL},
+retrieved automatically via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
 
 \item{parse_dates}{Logical. Should the \code{date} column be parsed into R Date objects?
 Default is \code{TRUE}.}
 
 \item{use_arrow}{Logical. Should the 'arrow' package be used for reading?
-Default is \code{TRUE} (recommended for speed).}
+Default is \code{TRUE} (recommended for high performance).}
 }
 \value{
-A data frame containing the daily timeseries.
+A \code{data.frame} containing daily hydroclimatic timeseries data with at least
+\code{date} and \code{gauge_id} columns, plus the requested hydrometeorological variables.
 }
 \description{
-Efficiently loads the daily hydroclimatic timeseries for Peruvian catchments.
-Optimized to load either specific catchments from individual files or the entire
-dataset using 'arrow' and 'collapse'.
+Efficiently loads daily hydroclimatic timeseries for Peruvian catchments.
+Features an optimized dual-pathway execution engine using 'arrow' and 'collapse':
+\itemize{
+\item For few catchments (<= 5), reads individual catchment files with column projection.
+\item For global or multi-catchment requests, uses \code{arrow::open_dataset()} with
+predicate pushdown (filtering stations and date ranges directly at scan time)
+to minimize memory footprint and maximize throughput.
+}
 }
 \examples{
-\dontrun{
 # Load timeseries for a specific station
-ts_station <- load_pe_timeseries("PE_110139")
+ts_station <- load_pe_timeseries(gauge_ids = "PE_110139")
+head(ts_station)
 
-# Load only precipitation and observed streamflow for all stations
-ts_sub <- load_pe_timeseries(variables = c("prec", "flow_obs"))
-}
+# Load only precipitation and observed streamflow with date range filter
+ts_sub <- load_pe_timeseries(
+  gauge_ids = "PE_110139",
+  variables = c("prec", "flow_obs"),
+  start_date = "2000-01-01",
+  end_date = "2000-03-31"
+)
+head(ts_sub)
 }

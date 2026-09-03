@@ -1,35 +1,55 @@
 #' Load CAMELS-PE daily timeseries data
 #'
-#' Efficiently loads the daily hydroclimatic timeseries for Peruvian catchments.
-#' Optimized to load either specific catchments from individual files or the entire
-#' dataset using 'arrow' and 'collapse'.
+#' Efficiently loads daily hydroclimatic timeseries for Peruvian catchments.
+#' Features an optimized dual-pathway execution engine using 'arrow' and 'collapse':
+#' \itemize{
+#'   \item For few catchments (<= 5), reads individual catchment files with column projection.
+#'   \item For global or multi-catchment requests, uses `arrow::open_dataset()` with
+#'         predicate pushdown (filtering stations and date ranges directly at scan time)
+#'         to minimize memory footprint and maximize throughput.
+#' }
 #'
 #' @param gauge_ids Character vector. Station/catchment identifiers (e.g. `"PE_110139"`).
-#'   If `NULL` (default), loads timeseries for all 136 catchments.
-#' @param variables Character vector. Names of the hydroclimatic variables to select.
+#'   If `NULL` (default), loads timeseries for all available catchments.
+#' @param variables Character vector. Names of hydroclimatic variables to select.
 #'   If `NULL` (default), all variables are loaded. Allowed variables:
 #'   `"prec"`, `"prec_var"`, `"flow_obs"`, `"flow_sim"`, `"pet"`, `"tmin"`,
 #'   `"tmean"`, `"tmax"`, `"srad"`, `"vprp"`.
-#' @param path Character. Path to the CAMELS-PE dataset directory. If NULL,
-#'   retrieved via [get_camels_pe_path()].
+#' @param start_date Optional character string or Date object (`"YYYY-MM-DD"`).
+#'   Start date for temporal filtering.
+#' @param end_date Optional character string or Date object (`"YYYY-MM-DD"`).
+#'   End date for temporal filtering.
+#' @param path Character string. Path to the CAMELS-PE dataset directory. If `NULL`,
+#'   retrieved automatically via [get_camels_pe_path()].
 #' @param parse_dates Logical. Should the `date` column be parsed into R Date objects?
 #'   Default is `TRUE`.
 #' @param use_arrow Logical. Should the 'arrow' package be used for reading?
-#'   Default is `TRUE` (recommended for speed).
+#'   Default is `TRUE` (recommended for high performance).
 #'
-#' @return A data frame containing the daily timeseries.
+#' @return A `data.frame` containing daily hydroclimatic timeseries data with at least
+#'   `date` and `gauge_id` columns, plus the requested hydrometeorological variables.
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Load timeseries for a specific station
-#' ts_station <- load_pe_timeseries("PE_110139")
+#' ts_station <- load_pe_timeseries(gauge_ids = "PE_110139")
+#' head(ts_station)
 #'
-#' # Load only precipitation and observed streamflow for all stations
-#' ts_sub <- load_pe_timeseries(variables = c("prec", "flow_obs"))
-#' }
-load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_camels_pe_path(),
-                               parse_dates = TRUE, use_arrow = TRUE) {
+#' # Load only precipitation and observed streamflow with date range filter
+#' ts_sub <- load_pe_timeseries(
+#'   gauge_ids = "PE_110139",
+#'   variables = c("prec", "flow_obs"),
+#'   start_date = "2000-01-01",
+#'   end_date = "2000-03-31"
+#' )
+#' head(ts_sub)
+load_pe_timeseries <- function(gauge_ids = NULL,
+                               variables = NULL,
+                               start_date = NULL,
+                               end_date = NULL,
+                               path = get_camels_pe_path(),
+                               parse_dates = TRUE,
+                               use_arrow = TRUE) {
   if (is.null(path) || !dir.exists(path)) {
     cli::cli_abort(c(
       "CAMELS-PE dataset path not found or invalid.",
@@ -49,19 +69,21 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
   # Columns to keep (always keep date and gauge_id)
   keep_cols <- c("date", "gauge_id")
   if (!is.null(variables)) {
-    keep_cols <- c(keep_cols, variables)
+    keep_cols <- unique(c(keep_cols, variables))
   }
 
-  # Strategy decision: if requesting a few gauge_ids, read from by_catchment
-  # Threshold = 10 stations
-  read_by_catchment <- !is.null(gauge_ids) && length(gauge_ids) <= 10
-
-  if (read_by_catchment) {
-    catchment_dir <- file.path(path, "03_timeseries", "by_catchment")
-    if (!dir.exists(catchment_dir)) {
-      read_by_catchment <- FALSE  # fallback to main file if folder doesn't exist
-    }
+  # Parse date filter bounds if supplied
+  if (!is.null(start_date)) {
+    start_date <- as.Date(start_date)
   }
+  if (!is.null(end_date)) {
+    end_date <- as.Date(end_date)
+  }
+
+  # Strategy decision:
+  # If requesting 5 or fewer stations, by_catchment individual reading is fastest
+  catchment_dir <- file.path(path, "03_timeseries", "by_catchment")
+  read_by_catchment <- !is.null(gauge_ids) && length(gauge_ids) <= 5 && dir.exists(catchment_dir)
 
   if (read_by_catchment) {
     loaded_dfs <- list()
@@ -73,31 +95,42 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
         next
       }
 
-      # Read individual file
+      cols_to_read <- setdiff(keep_cols, "gauge_id")
+
       if (use_arrow) {
-        df <- arrow::read_csv_arrow(file_path)
+        if (!is.null(variables)) {
+          df <- arrow::read_csv_arrow(file_path, col_select = tidyselect::any_of(cols_to_read))
+        } else {
+          df <- arrow::read_csv_arrow(file_path)
+        }
         df <- as.data.frame(df)
       } else {
         df <- utils::read.csv(file_path, stringsAsFactors = FALSE)
+        if (!is.null(variables)) {
+          df <- df[, intersect(names(df), cols_to_read), drop = FALSE]
+        }
       }
 
-      # Add gauge_id and align column ordering
       df$gauge_id <- gid
+
+      # Temporal filtering
+      if (!is.null(start_date) || !is.null(end_date)) {
+        if (!inherits(df$date, "Date")) {
+          df$date <- as.Date(df$date)
+        }
+        if (!is.null(start_date) && !is.null(end_date)) {
+          df <- collapse::fsubset(df, date >= start_date & date <= end_date)
+        } else if (!is.null(start_date)) {
+          df <- collapse::fsubset(df, date >= start_date)
+        } else if (!is.null(end_date)) {
+          df <- collapse::fsubset(df, date <= end_date)
+        }
+      }
+
+      # Reorder columns so date, gauge_id are first
       col_names <- names(df)
       col_order <- c("date", "gauge_id", setdiff(col_names, c("date", "gauge_id")))
       df <- df[, col_order, drop = FALSE]
-
-      # Filter columns if variables specified
-      if (!is.null(variables)) {
-        missing_vars <- setdiff(keep_cols, names(df))
-        if (length(missing_vars) > 0) {
-          cli::cli_warn(c(
-            "Some columns were not found in the timeseries file for station {.val {gid}}:",
-            "x" = "Missing column{?s}: {.field {missing_vars}}"
-          ))
-        }
-        df <- df[, intersect(names(df), keep_cols), drop = FALSE]
-      }
 
       loaded_dfs[[gid]] <- df
     }
@@ -106,34 +139,56 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
       return(data.frame())
     }
 
-    # Bind rows quickly using collapse
     res_df <- collapse::rowbind(loaded_dfs)
 
   } else {
-    # Read the main timeseries.csv file
+    # Read the main timeseries.csv file using Arrow dataset predicate pushdown
     main_file <- file.path(path, "03_timeseries", "timeseries.csv")
     if (!file.exists(main_file)) {
       cli::cli_abort("Main timeseries file not found at: {.path {main_file}}")
     }
 
     if (use_arrow) {
-      # Use arrow to read and select columns directly to save memory
+      # Use arrow::open_dataset for predicate pushdown and column projection
+      ds <- arrow::open_dataset(main_file, format = "csv")
+
+      # Build query
+      query <- ds
+
+      if (!is.null(gauge_ids)) {
+        target_ids <- gauge_ids
+        query <- query |> dplyr::filter(.data$gauge_id %in% target_ids)
+      }
+
+      if (!is.null(start_date)) {
+        s_date <- start_date
+        query <- query |> dplyr::filter(.data$date >= s_date)
+      }
+
+      if (!is.null(end_date)) {
+        e_date <- end_date
+        query <- query |> dplyr::filter(.data$date <= e_date)
+      }
+
       if (!is.null(variables)) {
-        df <- arrow::read_csv_arrow(main_file, col_select = tidyselect::any_of(keep_cols))
-        df <- as.data.frame(df)
-        missing_vars <- setdiff(keep_cols, names(df))
+        cols_present <- intersect(keep_cols, names(ds))
+        missing_vars <- setdiff(keep_cols, names(ds))
         if (length(missing_vars) > 0) {
           cli::cli_warn(c(
-            "Some columns were not found in the main timeseries file:",
+            "Some columns were not found in the timeseries dataset:",
             "x" = "Missing column{?s}: {.field {missing_vars}}"
           ))
         }
-      } else {
-        df <- arrow::read_csv_arrow(main_file)
-        df <- as.data.frame(df)
+        query <- query |> dplyr::select(tidyselect::all_of(cols_present))
       }
+
+      res_df <- as.data.frame(dplyr::collect(query))
+
     } else {
       df <- utils::read.csv(main_file, stringsAsFactors = FALSE)
+      if (!is.null(gauge_ids)) {
+        df <- collapse::fsubset(df, gauge_id %in% gauge_ids)
+      }
       if (!is.null(variables)) {
         missing_vars <- setdiff(keep_cols, names(df))
         if (length(missing_vars) > 0) {
@@ -144,17 +199,30 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
         }
         df <- df[, intersect(names(df), keep_cols), drop = FALSE]
       }
-    }
-
-    # Filter by gauge_ids using collapse::fsubset for speed
-    if (!is.null(gauge_ids)) {
-      res_df <- collapse::fsubset(df, gauge_id %in% gauge_ids)
-    } else {
+      if (!is.null(start_date) || !is.null(end_date)) {
+        if (!inherits(df$date, "Date")) {
+          df$date <- as.Date(df$date)
+        }
+        if (!is.null(start_date) && !is.null(end_date)) {
+          df <- collapse::fsubset(df, date >= start_date & date <= end_date)
+        } else if (!is.null(start_date)) {
+          df <- collapse::fsubset(df, date >= start_date)
+        } else if (!is.null(end_date)) {
+          df <- collapse::fsubset(df, date <= end_date)
+        }
+      }
       res_df <- df
     }
   }
 
-  # Parse Date objects if requested, or convert back to character if parse_dates = FALSE
+  # Ensure hydroclimate columns are numeric even if all values are NA
+  for (v in intersect(valid_vars, names(res_df))) {
+    if (!is.numeric(res_df[[v]])) {
+      res_df[[v]] <- as.numeric(res_df[[v]])
+    }
+  }
+
+  # Ensure date is Date class if requested, or character if parse_dates = FALSE
   if ("date" %in% names(res_df)) {
     if (parse_dates) {
       if (!inherits(res_df$date, "Date")) {
@@ -168,4 +236,39 @@ load_pe_timeseries <- function(gauge_ids = NULL, variables = NULL, path = get_ca
   }
 
   return(res_df)
+}
+
+#' Read CAMELS-PE time series
+#'
+#' Compatibility alias matching the `RCamelsPE::read_timeseries()` interface,
+#' powered by the high-performance 'arrow' dataset and 'collapse' query engine.
+#'
+#' @param gauge_id Character vector or `NULL`. Gauge identifiers to read.
+#' @param global Logical value. If `TRUE`, forces reading from the global file.
+#'   If `FALSE`, reads individual catchment files when available.
+#' @param vars Character vector or `NULL`. Optional variable names to retain.
+#' @param start_date Optional character string or Date (`"YYYY-MM-DD"`).
+#' @param end_date Optional character string or Date (`"YYYY-MM-DD"`).
+#' @param path Character string. Optional path to the CAMELS-PE root directory.
+#'
+#' @return A `data.frame` containing CAMELS-PE time series data.
+#' @export
+#'
+#' @examples
+#' # Read timeseries using RCamelsPE compatible syntax
+#' ts <- read_timeseries(gauge_id = "PE_110139", vars = c("date", "prec", "flow_obs"))
+#' head(ts)
+read_timeseries <- function(gauge_id = NULL,
+                            global = FALSE,
+                            vars = NULL,
+                            start_date = NULL,
+                            end_date = NULL,
+                            path = get_camels_pe_path()) {
+  load_pe_timeseries(
+    gauge_ids = gauge_id,
+    variables = vars,
+    start_date = start_date,
+    end_date = end_date,
+    path = path
+  )
 }

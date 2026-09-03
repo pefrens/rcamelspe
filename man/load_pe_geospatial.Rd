@@ -11,28 +11,29 @@ load_pe_geospatial(
 )
 }
 \arguments{
-\item{type}{Character. Either \code{"catchments"} to load catchment boundary polygons
+\item{type}{Character string. Either \code{"catchments"} to load catchment boundary polygons
 or \code{"gauges"} to load gauge point locations.}
 
 \item{gauge_ids}{Character vector. Station identifiers to filter the spatial features.
-If \code{NULL} (default), loads all features.}
+If \code{NULL} (default), loads all spatial features.}
 
-\item{path}{Character. Path to the CAMELS-PE dataset directory. If NULL,
-retrieved via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
+\item{path}{Character string. Path to the CAMELS-PE dataset directory. If \code{NULL},
+retrieved automatically via \code{\link[=get_camels_pe_path]{get_camels_pe_path()}}.}
 }
 \value{
-An \code{sf} spatial object containing the requested geometries.
+An \code{sf} spatial data frame object containing the requested geometries and
+station attributes.
 }
 \description{
-Loads the geospatial catchment boundaries (polygons) or gauging station locations (points)
-from the CAMELS-PE dataset.
+Loads geospatial catchment boundary polygons or gauging station point locations
+from the CAMELS-PE dataset as \code{sf} spatial objects.
 }
 \examples{
-\dontrun{
 # Load all catchment boundaries
 catchments <- load_pe_geospatial(type = "catchments")
+catchments
 
 # Load specific gauging stations
-gauges_sub <- load_pe_geospatial(type = "gauges", gauge_ids = c("PE_110139", "PE_111151"))
-}
+gauges_sub <- load_pe_geospatial(type = "gauges", gauge_ids = "PE_110139")
+gauges_sub
 }
