@@ -47,3 +47,13 @@ reference:
       - plot_pe_timeseries
       - plot_pe_catchments
       - plot_pe_attribute_map
+
+  - title: "Compatibility Aliases (RCamelsPE Interface)"
+    desc: "Drop-in functions matching the original RCamelsPE interface for seamless migration."
+    contents:
+      - download_camels_pe
+      - read_metadata
+      - read_dictionary
+      - read_attributes
+      - read_timeseries
+      - read_geospatial
