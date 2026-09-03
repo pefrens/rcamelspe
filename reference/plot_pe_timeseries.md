@@ -2,8 +2,8 @@
 
 Creates a time series plot for one CAMELS-PE variable, such as
 precipitation, observed streamflow, simulated streamflow, or
-temperature. The function returns a `ggplot` object, so it can be
-further customized using standard `ggplot2` layers.
+temperature. The function returns a `ggplot` object, styled with the
+project color palette.
 
 ## Usage
 
@@ -15,6 +15,18 @@ plot_pe_timeseries(
   date_col = "date",
   facet = TRUE,
   scales = "free_y",
+  line_color = "#2F4156",
+  ...
+)
+
+plot_timeseries(
+  data,
+  variable = "flow_obs",
+  gauge_id = NULL,
+  date_col = "date",
+  facet = TRUE,
+  scales = "free_y",
+  line_color = "#2F4156",
   ...
 )
 ```
@@ -33,7 +45,7 @@ plot_pe_timeseries(
 - gauge_id:
 
   Optional character vector. Gauge IDs used to filter the data before
-  plotting. If `NULL`, all available gauges are plotted.
+  plotting. If `NULL`, all available gauges in `data` are plotted.
 
 - date_col:
 
@@ -49,6 +61,11 @@ plot_pe_timeseries(
   [`ggplot2::facet_wrap()`](https://ggplot2.tidyverse.org/reference/facet_wrap.html).
   One of `"fixed"`, `"free"`, `"free_x"`, or `"free_y"` (default).
 
+- line_color:
+
+  Character string. Line color for the time series. Default is
+  `"#2F4156"` (Navy).
+
 - ...:
 
   Additional arguments passed to
@@ -56,16 +73,14 @@ plot_pe_timeseries(
 
 ## Value
 
-A `ggplot` object.
+A `ggplot` visualization object representing the time series.
 
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 ts <- load_pe_timeseries(
-  gauge_ids = c("PE_212900", "PE_200907"),
-  variables = c("prec", "flow_obs")
+  gauge_ids = "PE_110139",
+  variables = c("prec", "flow_sim")
 )
-plot_pe_timeseries(ts, variable = "flow_obs")
-} # }
+plot_pe_timeseries(ts, variable = "prec")
 ```

@@ -1,7 +1,8 @@
 # Download the CAMELS-PE dataset from Zenodo
 
-Downloads the CAMELS-PE dataset zip file from the Zenodo repository and
-optionally unzips it in the destination folder.
+Downloads the CAMELS-PE dataset zip file from the Zenodo repository
+([doi:10.5281/zenodo.20058779](https://doi.org/10.5281/zenodo.20058779)
+) and extracts it in the destination folder.
 
 ## Usage
 
@@ -18,8 +19,8 @@ download_pe_data(
 
 - dest_dir:
 
-  Character. Destination directory where the dataset should be saved.
-  Defaults to the persistent user data directory
+  Character string. Destination directory where the dataset should be
+  saved. Defaults to the persistent user data directory
   (`tools::R_user_dir("rcamelspe", "data")`).
 
 - unzip:
@@ -28,7 +29,7 @@ download_pe_data(
 
 - overwrite:
 
-  Logical. If the destination files already exist, should they be
+  Logical. If destination files already exist, should they be
   overwritten? Default is `FALSE`.
 
 - quiet:
@@ -37,16 +38,17 @@ download_pe_data(
 
 ## Value
 
-Character. The directory path where the dataset is located or extracted.
+Character string indicating the directory path where the dataset is
+located or extracted.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# Download and unzip to the persistent user data folder
+# Download and unzip to persistent user data folder
 download_pe_data()
 
-# Or download to a custom folder
-download_pe_data(dest_dir = "data-raw")
+# Download to a custom folder
+download_pe_data(dest_dir = tempdir())
 } # }
 ```

@@ -35,8 +35,8 @@ tras 5 repeticiones de cada operación:
 ### A. Lectura de Metadatos y Atributos
 
 - **RCamelsPE**: Utiliza `readr::read_csv()` para leer cada archivo y
-  `dplyr::full_join()` para unir las 7 tablas de atributos por la
-  columna `gauge_id`.
+  [`dplyr::full_join()`](https://dplyr.tidyverse.org/reference/mutate-joins.html)
+  para unir las 7 tablas de atributos por la columna `gauge_id`.
 - **rcamelspe**: Utiliza
   [`arrow::read_csv_arrow()`](https://arrow.apache.org/docs/r/reference/read_delim_arrow.html),
   que realiza la lectura de forma paralela y altamente optimizada en
@@ -51,13 +51,15 @@ La serie de tiempo global de CAMELS-PE (`timeseries.csv`) pesa
 aproximadamente **180 MB** y contiene millones de registros diarios. \*
 **RCamelsPE**: \* En modo por cuenca (`global = FALSE`): Lee
 secuencialmente cada archivo `.csv` individual usando
-`readr::read_csv()` y los combina usando `dplyr::bind_rows()`. \* En
-modo global (`global = TRUE`): Carga todo el archivo de 180 MB en la
-memoria RAM y luego filtra las filas correspondientes mediante
-`dplyr::filter()`. \* **rcamelspe**: \* **Estrategia Inteligente Dual**:
-Si se solicitan pocas cuencas ($`\le 10`$), lee directamente los
-archivos individuales de las estaciones especificadas mediante `arrow` y
-realiza una unión ultra rápida de filas usando
+`readr::read_csv()` y los combina usando
+[`dplyr::bind_rows()`](https://dplyr.tidyverse.org/reference/bind_rows.html).
+\* En modo global (`global = TRUE`): Carga todo el archivo de 180 MB en
+la memoria RAM y luego filtra las filas correspondientes mediante
+[`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html).
+\* **rcamelspe**: \* **Estrategia Inteligente Dual**: Si se solicitan
+pocas cuencas ($`\le 10`$), lee directamente los archivos individuales
+de las estaciones especificadas mediante `arrow` y realiza una unión
+ultra rápida de filas usando
 [`collapse::rowbind()`](https://fastverse.org/collapse/reference/rowbind.html).
 \* **Selección de Columnas (Projection) en Disco**: Si se solicita el
 archivo global o muchas cuencas, `rcamelspe` lee el archivo global

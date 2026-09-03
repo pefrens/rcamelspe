@@ -14,6 +14,8 @@ plot_pe_catchments(
   fill = NULL,
   ...
 )
+
+plot_catchments(catchments, gauges = NULL, gauge_id = NULL, fill = NULL, ...)
 ```
 
 ## Arguments
@@ -43,14 +45,12 @@ plot_pe_catchments(
 
 ## Value
 
-A `ggplot` object.
+A `ggplot` object with the spatial catchment geometries.
 
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 catchments <- load_pe_geospatial(type = "catchments")
 gauges <- load_pe_geospatial(type = "gauges")
 plot_pe_catchments(catchments, gauges)
-} # }
 ```

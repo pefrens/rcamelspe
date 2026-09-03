@@ -78,6 +78,9 @@ if (has_data) {
   # Vista rápida de los atributos cargados
   head(data_clustering)
 }
+#>    gauge_id     area elev_mean slope_mean p_mean aridity
+#> 1 PE_110139  360.584  4534.981      3.902  2.062   1.544
+#> 2 PE_111151 1263.804  3542.298     22.799  1.504   2.149
 ```
 
 ------------------------------------------------------------------------
@@ -99,16 +102,22 @@ if (has_data) {
   # Estandarizar atributos
   scaled_data <- scale(data_clustering[, clustering_vars])
   
-  # Ejecutar algoritmo K-means con 3 centros y múltiples reinicios aleatorios
+  # Ejecutar algoritmo K-means si hay suficientes cuencas, o partición adaptativa
   set.seed(123) # Para reproducibilidad
-  kmeans_res <- kmeans(scaled_data, centers = 3, nstart = 25)
-  
-  # Añadir la asignación de clúster (región) como un factor
-  data_clustering$region <- as.factor(kmeans_res$cluster)
+  if (nrow(data_clustering) >= 3) {
+    k_centers <- min(3, nrow(data_clustering))
+    kmeans_res <- kmeans(scaled_data, centers = k_centers, nstart = 25)
+    data_clustering$region <- as.factor(kmeans_res$cluster)
+  } else {
+    data_clustering$region <- as.factor(seq_len(nrow(data_clustering)))
+  }
   
   # Contar cuántas cuencas pertenecen a cada región
   table(data_clustering$region)
 }
+#> 
+#> 1 2 
+#> 1 1
 ```
 
 ------------------------------------------------------------------------
@@ -137,6 +146,7 @@ if (has_data) {
     catchments_regions <- sf::st_as_sf(catchments_regions)
   }
 }
+#> left join: catchments[gauge_id] 2/2 (100%) <1:1st> y[gauge_id] 2/2 (100%)
 ```
 
 ------------------------------------------------------------------------
@@ -149,7 +159,7 @@ algoritmo.
 
 ``` r
 
-if (has_data) {
+
   ggplot(catchments_regions) +
     geom_sf(aes(fill = region), color = "grey40", linewidth = 0.15) +
     scale_fill_brewer(palette = "Set2", name = "Región Hidroclimática\n(Grupo)") +
@@ -167,11 +177,9 @@ if (has_data) {
       legend.position = "right",
       panel.grid.major = element_line(color = "grey90", linewidth = 0.2)
     )
-} else {
-  message("El dataset no está disponible, omitiendo gráfico.")
-}
-#> El dataset no está disponible, omitiendo gráfico.
 ```
+
+![](regionalization_files/figure-html/plot_map-1.png)
 
 ------------------------------------------------------------------------
 
@@ -192,6 +200,9 @@ if (has_data) {
   
   print(resumen_regiones)
 }
+#>   region     area elev_mean slope_mean p_mean aridity
+#> 1      1  360.584  4534.981      3.902  2.062   1.544
+#> 2      2 1263.804  3542.298     22.799  1.504   2.149
 ```
 
 - **Región 1**: Cuencas con menor precipitación media y alta aridez

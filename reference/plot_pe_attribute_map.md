@@ -17,6 +17,15 @@ plot_pe_attribute_map(
   na_color = "grey80",
   ...
 )
+
+plot_attribute_map(
+  catchments,
+  attributes,
+  variable,
+  gauges = NULL,
+  na_color = "grey80",
+  ...
+)
 ```
 
 ## Arguments
@@ -49,14 +58,12 @@ plot_pe_attribute_map(
 
 ## Value
 
-A `ggplot` object.
+A `ggplot` object visualizing the attribute map.
 
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 catchments <- load_pe_geospatial(type = "catchments")
 attrs <- load_pe_attributes(attributes = "topographic")
 plot_pe_attribute_map(catchments, attrs, variable = "area")
-} # }
 ```

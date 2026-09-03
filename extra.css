@@ -1,0 +1,205 @@
+/* Custom pkgdown theme using Brand Palette:
+   Navy:     #2F4156
+   Teal:     #567C8D
+   Sky Blue: #C8D9E6
+   Beige:    #F5EFEB
+   White:    #FFFFFF
+*/
+
+:root {
+  --color-navy: #2F4156;
+  --color-teal: #567C8D;
+  --color-sky-blue: #C8D9E6;
+  --color-beige: #F5EFEB;
+  --color-white: #FFFFFF;
+}
+
+/* Navbar Customization */
+.navbar {
+  background-color: var(--color-navy) !important;
+  box-shadow: 0 2px 8px rgba(47, 65, 86, 0.2);
+  border-bottom: 2px solid var(--color-sky-blue);
+}
+
+.navbar .navbar-brand {
+  color: var(--color-white) !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.navbar .nav-link {
+  color: #E2E8F0 !important;
+  font-weight: 500;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+  color: var(--color-sky-blue) !important;
+}
+
+.navbar .nav-link.active,
+.navbar .nav-item.show > .nav-link {
+  color: var(--color-white) !important;
+  border-bottom: 2px solid var(--color-sky-blue);
+}
+
+/* Headings and Typography */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--color-navy);
+  font-weight: 600;
+}
+
+h1.page-header,
+.page-header h1 {
+  color: var(--color-navy);
+  border-bottom: 2px solid var(--color-sky-blue);
+  padding-bottom: 0.4rem;
+}
+
+/* Hyperlinks */
+a {
+  color: var(--color-teal);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover, a:focus {
+  color: var(--color-navy);
+  text-decoration: underline;
+}
+
+/* Sidebar & Navigation in Articles / Docs */
+.sidebar nav .nav-link {
+  color: var(--color-teal);
+}
+
+.sidebar nav .nav-link:hover {
+  color: var(--color-navy);
+  background-color: var(--color-beige);
+  border-radius: 4px;
+}
+
+.sidebar nav .nav-link.active {
+  color: var(--color-navy);
+  font-weight: 700;
+  border-left: 3px solid var(--color-teal);
+  background-color: var(--color-beige);
+  padding-left: 0.5rem;
+}
+
+/* Code Blocks & Inline Code */
+code {
+  color: var(--color-navy);
+  background-color: var(--color-beige);
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.88em;
+  border: 1px solid rgba(200, 217, 230, 0.6);
+}
+
+pre {
+  background-color: var(--color-beige) !important;
+  border: 1px solid var(--color-sky-blue);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+pre code {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0;
+}
+
+/* Badges and Tags */
+.badge.bg-primary {
+  background-color: var(--color-navy) !important;
+}
+
+.badge.bg-secondary {
+  background-color: var(--color-teal) !important;
+}
+
+.badge.bg-info {
+  background-color: var(--color-teal) !important;
+  color: var(--color-white) !important;
+}
+
+.badge.bg-light {
+  background-color: var(--color-beige) !important;
+  color: var(--color-navy) !important;
+  border: 1px solid var(--color-sky-blue);
+}
+
+/* Cards & Containers */
+.card {
+  border: 1px solid var(--color-sky-blue);
+  border-radius: 8px;
+  background-color: var(--color-white);
+  box-shadow: 0 1px 4px rgba(47, 65, 86, 0.06);
+}
+
+.card-header {
+  background-color: var(--color-beige);
+  border-bottom: 1px solid var(--color-sky-blue);
+  color: var(--color-navy);
+  font-weight: 600;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--color-navy) !important;
+  border-color: var(--color-navy) !important;
+  color: var(--color-white) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--color-teal) !important;
+  border-color: var(--color-teal) !important;
+}
+
+.btn-outline-primary {
+  color: var(--color-navy) !important;
+  border-color: var(--color-navy) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--color-navy) !important;
+  color: var(--color-white) !important;
+}
+
+.btn-secondary {
+  background-color: var(--color-teal) !important;
+  border-color: var(--color-teal) !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-navy) !important;
+  border-color: var(--color-navy) !important;
+}
+
+/* Tables */
+table.table thead th {
+  background-color: var(--color-navy);
+  color: var(--color-white);
+  border-color: var(--color-teal);
+}
+
+table.table tbody tr:nth-of-type(even) {
+  background-color: rgba(245, 239, 235, 0.4);
+}
+
+table.table tbody tr:hover {
+  background-color: rgba(200, 217, 230, 0.35);
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid var(--color-sky-blue);
+  background-color: var(--color-beige);
+  color: var(--color-navy);
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+}
