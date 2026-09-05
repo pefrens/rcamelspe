@@ -12,8 +12,8 @@
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
 <meta property="og:title" content="Catchment Attributes and Meteorology for Peru (CAMELS-PE)">
-<meta name="description" content="Download, load, manage, and filter the Catchment Attributes and Meteorology for Large-Sample Studies - Peru (CAMELS-PE) dataset for hydroclimatic and hydrological analysis. Offers high-performance reading and manipulation of large datasets using the arrow and collapse packages. Provides tools to extract catchment-scale meteorological time series, physical attributes, and spatial boundaries.">
-<meta property="og:description" content="Download, load, manage, and filter the Catchment Attributes and Meteorology for Large-Sample Studies - Peru (CAMELS-PE) dataset for hydroclimatic and hydrological analysis. Offers high-performance reading and manipulation of large datasets using the arrow and collapse packages. Provides tools to extract catchment-scale meteorological time series, physical attributes, and spatial boundaries.">
+<meta name="description" content="Download, load, manage, and filter the Catchment Attributes and Meteorology for Large-Sample Studies - Peru (CAMELS-PE) dataset for hydroclimatic and hydrological analysis. Offers high-performance reading and manipulation of large datasets using the arrow and collapse packages. Provides tools to extract catchment-scale meteorological time series, physical attributes, and spatial boundaries for 136 catchments, with 10 daily variables on the 1981-2025 calendar and 79 attributes. CAMELS-PE data are distributed separately under CC BY 4.0 &lt;doi:10.5281/zenodo.21195425&gt;.">
+<meta property="og:description" content="Download, load, manage, and filter the Catchment Attributes and Meteorology for Large-Sample Studies - Peru (CAMELS-PE) dataset for hydroclimatic and hydrological analysis. Offers high-performance reading and manipulation of large datasets using the arrow and collapse packages. Provides tools to extract catchment-scale meteorological time series, physical attributes, and spatial boundaries for 136 catchments, with 10 daily variables on the 1981-2025 calendar and 79 attributes. CAMELS-PE data are distributed separately under CC BY 4.0 &lt;doi:10.5281/zenodo.21195425&gt;.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -36,7 +36,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/benchmark.html">Benchmark de Eficiencia: rcamelspe vs RCamelsPE</a></li>
+<li><a class="dropdown-item" href="articles/benchmark.html">Rendimiento de rcamelspe: comparación reproducible con RCamelsPE</a></li>
     <li><a class="dropdown-item" href="articles/regionalization.html">Regionalización Hidroclimática de Cuencas en el Perú</a></li>
   </ul>
 </li>
@@ -61,12 +61,12 @@
 
 <p>The goal of <code>rcamelspe</code> is to provide an ultra-fast, computationally efficient, and user-friendly R interface to download, load, filter, and manage the <strong>CAMELS-PE</strong> (Catchment Attributes and Meteorology for Large-sample Studies - Peru) dataset.</p>
 <p>CAMELS-PE includes daily meteorological and hydrological time series, static catchment attributes, and geospatial representations for <strong>136 catchments</strong> distributed across the Pacific, Atlantic, and Titicaca hydrographic regions of Peru.</p>
-<p>To handle large volumes of records (over 2.2 million rows of daily climate observations and simulations) with maximum speed and minimum memory footprint, the package is engineered using: - <strong><code>arrow</code></strong>: for memory-mapped dataset reading, predicate pushdown (filtering stations and dates directly at the C++ scan level), and zero-overhead column projection. - <strong><code>collapse</code></strong>: for fast C/C++ data frame transformations, grouped calculations, row binding, and relational joins. - <strong><code>RCamelsPE</code> compatibility</strong>: full drop-in compatibility and aliases (<code><a href="reference/read_timeseries.html">read_timeseries()</a></code>, <code><a href="reference/read_attributes.html">read_attributes()</a></code>, <code><a href="reference/read_metadata.html">read_metadata()</a></code>, <code><a href="reference/read_dictionary.html">read_dictionary()</a></code>, <code><a href="reference/read_geospatial.html">read_geospatial()</a></code>, <code><a href="reference/set_camels_pe_path.html">set_camels_path()</a></code>, <code><a href="reference/get_camels_pe_path.html">get_camels_path()</a></code>).</p>
+<p>To handle large volumes of records (over 2.2 million rows of daily climate observations and simulations) with maximum speed and minimum memory footprint, the package is engineered using: - <strong><code>arrow</code></strong>: for memory-mapped dataset reading, predicate pushdown (filtering stations and dates directly at the C++ scan level), and zero-overhead column projection. - <strong><code>collapse</code></strong>: for fast C/C++ data frame transformations, grouped calculations, and relational joins. Individual time-series batches use <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">dplyr::bind_rows()</a></code> for stable output types. - <strong><code>RCamelsPE</code> compatibility</strong>: convenience wrappers and aliases (<code><a href="reference/read_timeseries.html">read_timeseries()</a></code>, <code><a href="reference/read_attributes.html">read_attributes()</a></code>, <code><a href="reference/read_metadata.html">read_metadata()</a></code>, <code><a href="reference/read_dictionary.html">read_dictionary()</a></code>, <code><a href="reference/read_geospatial.html">read_geospatial()</a></code>, <code><a href="reference/set_camels_pe_path.html">set_camels_path()</a></code>, <code><a href="reference/get_camels_pe_path.html">get_camels_path()</a></code>).</p>
 <hr>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the released version of <code>rcamelspe</code> from CRAN with:</p>
+<p>When available on CRAN, install with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rcamelspe"</span><span class="op">)</span></span></code></pre></div>
 <p>And the development version from GitHub with:</p>
@@ -79,12 +79,12 @@
 <h2 id="bundled-sample-dataset--instant-exploration">Bundled Sample Dataset &amp; Instant Exploration<a class="anchor" aria-label="anchor" href="#bundled-sample-dataset--instant-exploration"></a>
 </h2>
 <p><code>rcamelspe</code> includes a lightweight, self-contained sample dataset in <code>inst/extdata/sample_camels_pe</code> (~120 KB) covering 2 representative catchments (<code>PE_110139</code> and <code>PE_111151</code>). This allows you to explore all functions immediately after installation without waiting for large downloads.</p>
-<p>When you are ready to work with the complete 136-catchment dataset (approx. 120 MB zip, extracting to 186 MB), you can download it directly from Zenodo (DOI: 10.5281/zenodo.20058779):</p>
+<p>When you are ready to work with the complete 136-catchment dataset (approx. 120 MB zip, extracting to 186 MB), you can download it directly from Zenodo (DOI: 10.5281/zenodo.21195425):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pefrens/rcamelspe" class="external-link">rcamelspe</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Download and extract the full dataset to user data directory</span></span>
-<span><span class="fu"><a href="reference/download_pe_data.html">download_pe_data</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/download_pe_data.html">download_pe_data</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"1.0.1"</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -100,13 +100,9 @@
 <code class="sourceCode R"><span><span class="co"># Gauging stations</span></span>
 <span><span class="va">stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_pe_metadata.html">load_pe_metadata</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"stations"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">stations</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gauge_id"</span>, <span class="st">"gauge_name"</span>, <span class="st">"gauge_region"</span>, <span class="st">"gauge_elev"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      gauge_id             gauge_name gauge_region gauge_elev</span></span>
-<span><span class="co">#&gt; 1 PE_472A9204                 Chilca     Atlantic       2770</span></span>
-<span><span class="co">#&gt; 2   PE_210003             Huancasaya     Titicaca       4327</span></span>
-<span><span class="co">#&gt; 3   PE_204617               Huatiapa      Pacific        684</span></span>
-<span><span class="co">#&gt; 4 PE_472935F2      Intihuatana Km105     Atlantic       2166</span></span>
-<span><span class="co">#&gt; 5   PE_210406 Puente Isla Cabanillas     Titicaca       3837</span></span>
-<span><span class="co">#&gt; 6   PE_270503       Puente Zapatilla     Titicaca       3836</span></span>
+<span><span class="co">#&gt;    gauge_id       gauge_name gauge_region gauge_elev</span></span>
+<span><span class="co">#&gt; 1 PE_110139            Picoy      Pacific       3037</span></span>
+<span><span class="co">#&gt; 2 PE_111151 Puente Magdalena      Pacific        872</span></span>
 <span></span>
 <span><span class="co"># Data dictionary</span></span>
 <span><span class="va">dict</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_dictionary.html">read_dictionary</a></span><span class="op">(</span>category <span class="op">=</span> <span class="st">"climatic"</span><span class="op">)</span></span>
@@ -128,13 +124,9 @@
 <code class="sourceCode R"><span><span class="co"># Load merged topographic and landcover attributes</span></span>
 <span><span class="va">attrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_pe_attributes.html">load_pe_attributes</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"topographic"</span>, <span class="st">"landcover"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">attrs</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gauge_id"</span>, <span class="st">"area"</span>, <span class="st">"elev_mean"</span>, <span class="st">"forest_perc"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      gauge_id      area elev_mean forest_perc</span></span>
-<span><span class="co">#&gt; 1 PE_472A9204  9187.868  4210.225       1.389</span></span>
-<span><span class="co">#&gt; 2   PE_210003  2008.790  4659.078       0.050</span></span>
-<span><span class="co">#&gt; 3   PE_204617 13224.802  4213.036       1.373</span></span>
-<span><span class="co">#&gt; 4 PE_472935F2  9576.154  4196.945       1.876</span></span>
-<span><span class="co">#&gt; 5   PE_210406  2867.025  4467.149       0.000</span></span>
-<span><span class="co">#&gt; 6   PE_270503   390.800  3990.867       0.000</span></span></code></pre></div>
+<span><span class="co">#&gt;    gauge_id     area elev_mean forest_perc</span></span>
+<span><span class="co">#&gt; 1 PE_110139  360.584  4534.981       1.827</span></span>
+<span><span class="co">#&gt; 2 PE_111151 1263.804  3542.298       3.511</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level3">
@@ -176,10 +168,10 @@
 <hr>
 </div>
 <div class="section level3">
-<h3 id="id_5-full-drop-in-compatibility-with-rcamelspe">5. Full Drop-in Compatibility with <code>RCamelsPE</code>
-<a class="anchor" aria-label="anchor" href="#id_5-full-drop-in-compatibility-with-rcamelspe"></a>
+<h3 id="id_5-compatibility-wrappers-with-rcamelspe">5. Compatibility Wrappers with <code>RCamelsPE</code>
+<a class="anchor" aria-label="anchor" href="#id_5-compatibility-wrappers-with-rcamelspe"></a>
 </h3>
-<p>Existing scripts written for <code>RCamelsPE</code> run without any modifications:</p>
+<p>The following wrappers support common <code>RCamelsPE</code> workflows:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compatible syntax:</span></span>
 <span><span class="va">stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_metadata.html">read_metadata</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -187,6 +179,103 @@
 <span><span class="va">attrs</span>    <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_attributes.html">read_attributes</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"topographic"</span><span class="op">)</span></span>
 <span><span class="va">ts</span>       <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_timeseries.html">read_timeseries</a></span><span class="op">(</span>gauge_id <span class="op">=</span> <span class="st">"PE_110139"</span>, vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="st">"prec"</span>, <span class="st">"flow_obs"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">spatial</span>  <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_geospatial.html">read_geospatial</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"catchments"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="camels-pe-data-reference">CAMELS-PE data reference<a class="anchor" aria-label="anchor" href="#camels-pe-data-reference"></a>
+</h2>
+<p>CAMELS-PE v1.0.1, produced by SENAMHI, describes <strong>136 catchments</strong>: 67 Pacific, 56 Atlantic and 13 Titicaca. It provides <strong>79 static attributes</strong> in seven thematic groups and <strong>10 daily variables</strong> on the 1981-2025 calendar. The calendar does not imply complete observations: unavailable dates remain <code>NA</code>. Check <code>gauge_record_start</code>, <code>gauge_record_end</code> and <code>gauge_perc_obs</code> in station metadata. Hydrological signatures are derived from <strong>simulated streamflow</strong>. Spatial layers are GeoPackages in WGS84 (EPSG:4326), linked by <code>gauge_id</code>.</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr>
+<th>Daily variable</th>
+<th>Meaning</th>
+<th>Unit</th>
+<th>Source</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>prec</code></td>
+<td>Precipitation</td>
+<td>mm/day</td>
+<td>PISCOp v2.1</td>
+</tr>
+<tr>
+<td><code>prec_var</code></td>
+<td>Precipitation variance</td>
+<td>mm²/day²</td>
+<td>PISCOp v2.1</td>
+</tr>
+<tr>
+<td><code>pet</code></td>
+<td>Potential evapotranspiration</td>
+<td>mm/day</td>
+<td>PISCOeo_pm v1.0</td>
+</tr>
+<tr>
+<td>
+<code>tmin</code>, <code>tmean</code>, <code>tmax</code>
+</td>
+<td>Minimum, mean and maximum temperature</td>
+<td>°C</td>
+<td>PISCOt v1.2</td>
+</tr>
+<tr>
+<td><code>srad</code></td>
+<td>Surface solar radiation</td>
+<td>MJ/m²/day</td>
+<td>ERA5-Land</td>
+</tr>
+<tr>
+<td><code>vprp</code></td>
+<td>Vapor pressure</td>
+<td>hPa</td>
+<td>ERA5-Land</td>
+</tr>
+<tr>
+<td><code>flow_obs</code></td>
+<td>Observed streamflow</td>
+<td>mm/day</td>
+<td>SENAMHI</td>
+</tr>
+<tr>
+<td><code>flow_sim</code></td>
+<td>Simulated streamflow</td>
+<td>mm/day</td>
+<td>PISCO-ARNOVIC v1.1</td>
+</tr>
+</tbody>
+</table>
+<p>Attribute sources are FABDEM v1.2 (topography), MapBiomas Peru and Ecuador (land cover), GLiM v1.0 and GLHYMPS v2.0 (geology), DSOLMap (soil orders), and ANA (human intervention). Consult <code><a href="reference/read_dictionary.html">read_dictionary()</a></code> for file-level definitions.</p>
+<div class="section level3">
+<h3 id="batch-access">Batch access<a class="anchor" aria-label="anchor" href="#batch-access"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Explicitly use the bundled two-catchment, year-2000 sample</span></span>
+<span><span class="va">sample_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"sample_camels_pe"</span>, package <span class="op">=</span> <span class="st">"rcamelspe"</span><span class="op">)</span></span>
+<span><span class="va">stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_metadata.html">read_metadata</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">sample_path</span><span class="op">)</span></span>
+<span><span class="va">daily</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_timeseries.html">read_timeseries</a></span><span class="op">(</span></span>
+<span>  gauge_id <span class="op">=</span> <span class="va">stations</span><span class="op">$</span><span class="va">gauge_id</span>, global <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="st">"prec"</span>, <span class="st">"prec_var"</span>, <span class="st">"flow_obs"</span>, <span class="st">"flow_sim"</span><span class="op">)</span>,</span>
+<span>  start_date <span class="op">=</span> <span class="st">"2000-01-01"</span>, end_date <span class="op">=</span> <span class="st">"2000-01-31"</span>, path <span class="op">=</span> <span class="va">sample_path</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># For the full release, use the directory returned by download_pe_data().</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="sources-license-and-citation">Sources, license and citation<a class="anchor" aria-label="anchor" href="#sources-license-and-citation"></a>
+</h3>
+<p>The data (including the bundled subset) are licensed under <strong>CC BY 4.0</strong>; the <code>rcamelspe</code> package code uses the license in DESCRIPTION. This package is a separate project from Harold Llauca’s <a href="https://github.com/hllauca/RCamelsPE" class="external-link">RCamelsPE</a>, linked by SENAMHI.</p>
+<p>Official references: <a href="https://www.senamhi.gob.pe/camels-pe/" class="external-link">CAMELS-PE portal</a> and <a href="https://zenodo.org/records/21195425/files/CAMELS-PE_Technical_Data_Description.pdf" class="external-link">technical description</a>.</p>
+<p>When using CAMELS-PE, cite both:</p>
+<ul>
+<li>Llauca, H., Montesinos-Caceres, C., Gutierrez-Reynaga, M., &amp; Lavado-Casimiro, W. (2026). CAMELS-PE: Hydrometeorological time series and catchment attributes for 136 catchments in Peru [Preprint]. Earth System Science Data Discussions. <a href="https://doi.org/10.5194/essd-2026-386" class="external-link">doi:10.5194/essd-2026-386</a>.</li>
+<li>Llauca, H., Montesinos-Caceres, C., Gutierrez-Reynaga, M., &amp; Lavado-Casimiro, W. (2026). CAMELS-PE: Catchment Attributes and Meteorology for Large-sample Studies in Peru (Version 1.0.1) [Data set]. Zenodo. <a href="https://doi.org/10.5281/zenodo.21195425" class="external-link">doi:10.5281/zenodo.21195425</a>.</li>
+</ul>
 </div>
 </div>
 </div>

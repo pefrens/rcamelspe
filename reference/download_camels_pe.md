@@ -7,7 +7,7 @@ Compatibility alias matching `RCamelsPE::download_camels_pe()`.
 ``` r
 download_camels_pe(
   path,
-  version = "1.0",
+  version = "1.0.1",
   unzip = TRUE,
   overwrite = FALSE,
   set_path = TRUE
@@ -22,7 +22,7 @@ download_camels_pe(
 
 - version:
 
-  Character string. Dataset version. Default is `"1.0"`.
+  Character string. Dataset release: `"1.0.1"` (default) or `"1.0"`.
 
 - unzip:
 

@@ -48,6 +48,12 @@ load_pe_attributes(
 A `data.frame` containing the merged catchment attributes with
 `gauge_id` as primary identifier.
 
+## Details
+
+CAMELS-PE v1.0.1 documents 79 attributes in seven thematic tables.
+Hydrological signatures are derived from simulated streamflow, not
+observations.
+
 ## Examples
 
 ``` r

@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Benchmark de Eficiencia: rcamelspe vs RCamelsPE • rcamelspe</title>
+<title>Rendimiento de rcamelspe: comparación reproducible con RCamelsPE • rcamelspe</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Benchmark de Eficiencia: rcamelspe vs RCamelsPE">
+<meta property="og:title" content="Rendimiento de rcamelspe: comparación reproducible con RCamelsPE">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,7 +34,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/benchmark.html">Benchmark de Eficiencia: rcamelspe vs RCamelsPE</a></li>
+<li><a class="dropdown-item" href="../articles/benchmark.html">Rendimiento de rcamelspe: comparación reproducible con RCamelsPE</a></li>
     <li><a class="dropdown-item" href="../articles/regionalization.html">Regionalización Hidroclimática de Cuencas en el Perú</a></li>
   </ul>
 </li>
@@ -58,7 +58,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Benchmark de Eficiencia: rcamelspe vs RCamelsPE</h1>
+      <h1>Rendimiento de rcamelspe: comparación reproducible con RCamelsPE</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/pefrens/rcamelspe/blob/master/vignettes/benchmark.Rmd" class="external-link"><code>vignettes/benchmark.Rmd</code></a></small>
@@ -67,183 +67,518 @@
 
     
     
-<p>El paquete <code>rcamelspe</code> ha sido desarrollado con un enfoque
-principal en la <strong>eficiencia computacional</strong> y la
-<strong>rapidez de procesamiento</strong>. A diferencia del paquete de
-referencia <code>RCamelsPE</code>, que utiliza las librerías
-tradicionales del ecosistema Tidyverse (<code>readr</code> y
-<code>dplyr</code>), <code>rcamelspe</code> utiliza motores de alta
-velocidad como <code>arrow</code> (para la lectura y filtrado en disco
-de archivos CSV de gran tamaño) y <code>collapse</code> (para
-transformaciones, agrupamientos y uniones ultrarrápidas de data
-frames).</p>
-<p>Este documento presenta un benchmark comparativo entre ambos paquetes
-utilizando el dataset real de <strong>CAMELS-PE</strong>.</p>
-<hr>
+<p><code>rcamelspe</code> combina Arrow para leer y seleccionar datos
+con <code>collapse</code> para uniones y transformaciones. Esta viñeta
+evalúa el beneficio práctico frente al paquete <a href="https://github.com/hllauca/RCamelsPE" class="external-link">RCamelsPE de Harold
+Llauca</a>, utilizando los mismos archivos locales y consultas con
+resultados equivalentes. Destaca las ventajas <strong>medidas</strong>
+de nuestra implementación y permite identificar las operaciones donde
+conviene usarla. Los resultados corresponden a esta máquina y estas
+revisiones; no garantizan la misma aceleración en otros equipos.</p>
 <div class="section level2">
-<h2 id="tabla-resumen-de-eficiencia">1. Tabla Resumen de Eficiencia<a class="anchor" aria-label="anchor" href="#tabla-resumen-de-eficiencia"></a>
+<h2 id="resultados-dónde-es-más-eficiente-rcamelspe">Resultados: dónde es más eficiente rcamelspe<a class="anchor" aria-label="anchor" href="#resultados-d%C3%B3nde-es-m%C3%A1s-eficiente-rcamelspe"></a>
 </h2>
-<p>Los siguientes tiempos representan la mediana de ejecución (en
-segundos) tras 5 repeticiones de cada operación:</p>
+<p>En esta ejecución, <code>rcamelspe</code> obtuvo una mediana menor en
+<strong>10 de 11 escenarios</strong>. La mayor aceleración fue
+<strong>4.52 veces</strong> en <strong>Nacional: dos variables, año
+2000</strong>, con una reducción de tiempo del <strong>77.9 %</strong>.
+Se verificó la equivalencia en todos los escenarios antes de medir.</p>
+<p>Cada celda muestra <strong>mediana [percentil 25–percentil
+75]</strong>, en segundos, de siete repeticiones. La aceleración es
+<code>mediana(RCamelsPE) / mediana(rcamelspe)</code>: valores mayores
+que uno favorecen a <code>rcamelspe</code>; valores menores que uno
+favorecen a <code>RCamelsPE</code>.</p>
 <table class="table">
 <colgroup>
-<col width="21%">
-<col width="26%">
-<col width="26%">
-<col width="26%">
+<col width="39%">
+<col width="23%">
+<col width="23%">
+<col width="13%">
 </colgroup>
 <thead><tr class="header">
-<th align="left">Operación</th>
-<th align="center">RCamelsPE (Tidyverse)</th>
-<th align="center">rcamelspe (arrow + collapse)</th>
-<th align="center">Aceleración (Speedup)</th>
+<th align="left">Escenario</th>
+<th align="left">RCamelsPE</th>
+<th align="left">rcamelspe</th>
+<th align="left">Aceleracion</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">
-<strong>Lectura de Metadatos</strong>
-(<code>stations.csv</code>)</td>
-<td align="center">0.0154s</td>
-<td align="center">0.0084s</td>
-<td align="center"><strong>1.84x</strong></td>
+<td align="left">Metadatos: 136 estaciones</td>
+<td align="left">0.007 [0.007–0.007]</td>
+<td align="left">0.006 [0.006–0.006]</td>
+<td align="left">1.18x</td>
 </tr>
 <tr class="even">
-<td align="left">
-<strong>Unión de Atributos</strong>
-(<code>type = "all"</code>)</td>
-<td align="center">0.0913s</td>
-<td align="center">0.0451s</td>
-<td align="center"><strong>2.02x</strong></td>
+<td align="left">Atributos: siete tablas</td>
+<td align="left">0.060 [0.059–0.061]</td>
+<td align="left">0.040 [0.039–0.042]</td>
+<td align="left">1.51x</td>
 </tr>
 <tr class="odd">
-<td align="left"><strong>Serie de Tiempo (1 cuenca)</strong></td>
-<td align="center">0.0317s</td>
-<td align="center">0.0156s</td>
-<td align="center"><strong>2.03x</strong></td>
+<td align="left">Una cuenca: todas las variables</td>
+<td align="left">0.033 [0.030–0.035]</td>
+<td align="left">0.019 [0.018–0.019]</td>
+<td align="left">1.76x</td>
 </tr>
 <tr class="even">
-<td align="left"><strong>Serie de Tiempo (10 cuencas)</strong></td>
-<td align="center">0.2833s</td>
-<td align="center">0.1727s</td>
-<td align="center"><strong>1.64x</strong></td>
+<td align="left">Cinco cuencas: dos variables</td>
+<td align="left">0.162 [0.156–0.165]</td>
+<td align="left">0.086 [0.083–0.088]</td>
+<td align="left">1.89x</td>
 </tr>
 <tr class="odd">
-<td align="left">
-<strong>Serie de Tiempo Global</strong> (~180 MB)</td>
-<td align="center">1.4611s</td>
-<td align="center">1.1980s</td>
-<td align="center"><strong>1.22x</strong></td>
+<td align="left">Diez cuencas: dos variables</td>
+<td align="left">0.326 [0.320–0.330]</td>
+<td align="left">0.172 [0.169–0.174]</td>
+<td align="left">1.90x</td>
 </tr>
 <tr class="even">
-<td align="left">
-<strong>Lectura de Capas Geospatiales</strong>
-(GPKG)</td>
-<td align="center">0.0167s</td>
-<td align="center">0.0161s</td>
-<td align="center"><strong>1.04x</strong></td>
+<td align="left">Veinte cuencas: dos variables</td>
+<td align="left">0.640 [0.640–0.649]</td>
+<td align="left">0.346 [0.339–0.347]</td>
+<td align="left">1.85x</td>
+</tr>
+<tr class="odd">
+<td align="left">Cuarenta cuencas: dos variables</td>
+<td align="left">1.467 [1.440–1.513]</td>
+<td align="left">0.582 [0.578–0.603]</td>
+<td align="left">2.52x</td>
+</tr>
+<tr class="even">
+<td align="left">Nacional: todas las variables</td>
+<td align="left">2.364 [2.194–2.392]</td>
+<td align="left">1.011 [1.005–1.070]</td>
+<td align="left">2.34x</td>
+</tr>
+<tr class="odd">
+<td align="left">Nacional: dos variables</td>
+<td align="left">2.285 [2.155–2.348]</td>
+<td align="left">0.561 [0.557–0.565]</td>
+<td align="left">4.07x</td>
+</tr>
+<tr class="even">
+<td align="left">Nacional: dos variables, año 2000</td>
+<td align="left">2.494 [2.470–2.512]</td>
+<td align="left">0.552 [0.549–0.555]</td>
+<td align="left">4.52x</td>
+</tr>
+<tr class="odd">
+<td align="left">Geoespacial: estaciones</td>
+<td align="left">0.009 [0.008–0.009]</td>
+<td align="left">0.009 [0.009–0.009]</td>
+<td align="left">0.98x</td>
 </tr>
 </tbody>
 </table>
-<hr>
+<div class="figure">
+<img src="benchmark_files/figure-html/speedup-plot-1.png" class="r-plt" alt="Aceleración calculada a partir de las medianas. La línea vertical indica igualdad de tiempo." width="1152"><p class="caption">
+Aceleración calculada a partir de las medianas. La línea vertical indica
+igualdad de tiempo.
+</p>
 </div>
-<div class="section level2">
-<h2 id="detalles-técnicos-de-las-optimizaciones">2. Detalles Técnicos de las Optimizaciones<a class="anchor" aria-label="anchor" href="#detalles-t%C3%A9cnicos-de-las-optimizaciones"></a>
-</h2>
+<p>Los intervalos intercuartílicos describen dispersión, no son
+intervalos de confianza. En operaciones de pocos milisegundos,
+diferencias pequeñas pueden cambiar con el ruido del sistema. Se
+muestran todos los escenarios y no se descartan repeticiones con
+recolección de basura.</p>
 <div class="section level3">
-<h3 id="a--lectura-de-metadatos-y-atributos">A. Lectura de Metadatos y Atributos<a class="anchor" aria-label="anchor" href="#a--lectura-de-metadatos-y-atributos"></a>
+<h3 id="lectura-práctica-de-los-resultados">Lectura práctica de los resultados<a class="anchor" aria-label="anchor" href="#lectura-pr%C3%A1ctica-de-los-resultados"></a>
 </h3>
 <ul>
 <li>
-<strong>RCamelsPE</strong>: Utiliza <code>readr::read_csv()</code>
-para leer cada archivo y <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::full_join()</a></code> para unir las 7
-tablas de atributos por la columna <code>gauge_id</code>.</li>
+<strong>Nacional: todas las variables:</strong> 1.011 s con
+<code>rcamelspe</code> y 2.364 s con <code>RCamelsPE</code>
+(2.34x).</li>
 <li>
-<strong>rcamelspe</strong>: Utiliza
-<code><a href="https://arrow.apache.org/docs/r/reference/read_delim_arrow.html" class="external-link">arrow::read_csv_arrow()</a></code>, que realiza la lectura de forma
-paralela y altamente optimizada en C++. Para la unión de las tablas de
-atributos, utiliza <code>collapse::join(..., how = "full")</code>, una
-implementación de uniones relacionales en C/C++ extremadamente rápida
-que evita la sobrecarga del emparejamiento de filas de R.</li>
+<strong>Nacional: dos variables:</strong> 0.561 s con
+<code>rcamelspe</code> y 2.285 s con <code>RCamelsPE</code>
+(4.07x).</li>
+<li>
+<strong>Nacional: dos variables, año 2000:</strong> 0.552 s con
+<code>rcamelspe</code> y 2.494 s con <code>RCamelsPE</code>
+(4.52x).</li>
+<li>
+<strong>Diez cuencas: dos variables:</strong> 0.172 s con
+<code>rcamelspe</code> y 0.326 s con <code>RCamelsPE</code>
+(1.90x).</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="b--gestión-de-series-de-tiempo-el-mayor-cuello-de-botella">B. Gestión de Series de Tiempo (El mayor cuello de botella)<a class="anchor" aria-label="anchor" href="#b--gesti%C3%B3n-de-series-de-tiempo-el-mayor-cuello-de-botella"></a>
+<h3 id="corrección-del-cuello-de-botella-de-diez-cuencas">Corrección del cuello de botella de diez cuencas<a class="anchor" aria-label="anchor" href="#correcci%C3%B3n-del-cuello-de-botella-de-diez-cuencas"></a>
 </h3>
-<p>La serie de tiempo global de CAMELS-PE (<code>timeseries.csv</code>)
-pesa aproximadamente <strong>180 MB</strong> y contiene millones de
-registros diarios. * <strong>RCamelsPE</strong>: * En modo por cuenca
-(<code>global = FALSE</code>): Lee secuencialmente cada archivo
-<code>.csv</code> individual usando <code>readr::read_csv()</code> y los
-combina usando <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">dplyr::bind_rows()</a></code>. * En modo global
-(<code>global = TRUE</code>): Carga todo el archivo de 180 MB en la
-memoria RAM y luego filtra las filas correspondientes mediante
-<code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code>. * <strong>rcamelspe</strong>: *
-<strong>Estrategia Inteligente Dual</strong>: Si se solicitan pocas
-cuencas
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≤</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">\le 10</annotation></semantics></math>),
-lee directamente los archivos individuales de las estaciones
-especificadas mediante <code>arrow</code> y realiza una unión ultra
-rápida de filas usando <code><a href="https://fastverse.org/collapse/reference/rowbind.html" class="external-link">collapse::rowbind()</a></code>. *
-<strong>Selección de Columnas (Projection) en Disco</strong>: Si se
-solicita el archivo global o muchas cuencas, <code>rcamelspe</code> lee
-el archivo global utilizando <code><a href="https://arrow.apache.org/docs/r/reference/read_delim_arrow.html" class="external-link">arrow::read_csv_arrow()</a></code>, pero
-<strong>únicamente lee y proyecta en memoria las columnas especificadas
-por el usuario</strong> (usando el argumento <code>col_select</code>).
-Esto ahorra hasta un 90% de memoria RAM y reduce drásticamente el tiempo
-de entrada/salida de disco. El filtrado final se realiza con el veloz
-operador <code><a href="https://fastverse.org/collapse/reference/fsubset.html" class="external-link">collapse::fsubset()</a></code>.</p>
-<hr>
+<p>La implementación anterior cambiaba al maestro al superar cinco
+cuencas: escaneaba unos 178 MiB incluso para una selección pequeña. El
+perfil de rutas mostró aproximadamente 0,16 s para diez archivos frente
+a 0,53 s para el maestro; con cuarenta archivos, la relación se invertía
+(0,66 s frente a 0,53 s). Estas mediciones exploratorias motivaron el
+cambio; la tabla principal contiene la validación repetida del código
+final. El perfil exploratorio (medianas de tres llamadas por ruta, dos
+hilos) se conserva en <code>inst/benchmarks/routing-profile.csv</code>;
+no se mezcla con el benchmark final.</p>
+<p>Ahora se compara el tamaño de los CSV solicitados, más una estimación
+de 4 MiB por apertura de archivo, con el tamaño del maestro. Así se
+tiene en cuenta tanto el volumen a leer como la sobrecarga de múltiples
+lectores. Es una heurística calibrada con estos datos, no una garantía
+del punto óptimo para todos los discos. <code>global = TRUE</code>
+mantiene el control explícito. No se introduce una caché de datos.</p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Consulta</th>
+<th align="right">Anterior_s</th>
+<th align="right">Actual_s</th>
+<th align="left">Mejora_interna</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="left">Diez cuencas</td>
+<td align="right">0.515</td>
+<td align="right">0.172</td>
+<td align="left">3.00x</td>
+</tr></tbody>
+</table>
+<p>La referencia anterior se conserva en
+<code>inst/benchmarks/before-routing/</code>, junto con sus mediciones,
+entorno y hashes. Corresponde a una ejecución anterior; para comparar
+paquetes en la misma ejecución se debe usar la tabla principal.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="ejemplo-de-uso-comparativo">3. Ejemplo de Uso Comparativo<a class="anchor" aria-label="anchor" href="#ejemplo-de-uso-comparativo"></a>
+<h2 id="escenarios-y-decisiones-de-implementación">Escenarios y decisiones de implementación<a class="anchor" aria-label="anchor" href="#escenarios-y-decisiones-de-implementaci%C3%B3n"></a>
 </h2>
+<p>El archivo maestro medido ocupa <strong>177.64 MiB</strong> y
+contiene <strong>2.235.296 filas</strong>. Las consultas nacionales
+abarcan las 136 estaciones; las consultas por cuenca usan los mismos
+identificadores en ambos paquetes.</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Escenario</th>
+<th>Trabajo realizado por ambos paquetes</th>
+<th>Utilidad</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Metadatos</td>
+<td>Leer <code>stations.csv</code> completo</td>
+<td>Inventario de estaciones</td>
+</tr>
+<tr class="even">
+<td>Atributos</td>
+<td>Leer y unir las siete tablas por <code>gauge_id</code>
+</td>
+<td>Regionalización</td>
+</tr>
+<tr class="odd">
+<td>Una cuenca</td>
+<td>Serie completa, diez variables</td>
+<td>Exploración de una estación</td>
+</tr>
+<tr class="even">
+<td>Cinco, diez, veinte y cuarenta cuencas</td>
+<td>Serie completa de <code>prec</code> y <code>flow_obs</code>, con
+identificadores</td>
+<td>Procesamiento por lotes</td>
+</tr>
+<tr class="odd">
+<td>Nacional completo</td>
+<td>Archivo maestro, todas las filas y variables</td>
+<td>Análisis nacional</td>
+</tr>
+<tr class="even">
+<td>Nacional proyectado</td>
+<td>Archivo maestro, <code>prec</code> y <code>flow_obs</code>, con
+identificadores</td>
+<td>Selección de variables</td>
+</tr>
+<tr class="odd">
+<td>Nacional, año 2000</td>
+<td>Misma selección, limitada a un año</td>
+<td>Calibración y validación</td>
+</tr>
+<tr class="even">
+<td>Geoespacial</td>
+<td>GeoPackage de estaciones completo</td>
+<td>Control basado en <code>sf</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Para los lotes se usa el modo habitual por cuenca de
+<code>RCamelsPE</code>. <code>rcamelspe</code> decide su ruta
+automáticamente según el coste estimado de los CSV. Se compara así la
+experiencia de uso sin forzar al paquete de referencia a una ruta menos
+conveniente. Los escenarios nacionales fuerzan
+<code>global = TRUE</code> en ambos paquetes.</p>
+<p>La revisión evaluada de <code>RCamelsPE</code> no ofrece argumentos
+de fecha en <code><a href="../reference/read_timeseries.html">read_timeseries()</a></code>. En el escenario anual, se
+añade <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> a su lectura <strong>dentro del
+tiempo medido</strong>. <code>rcamelspe</code> aplica
+<code>start_date</code> y <code>end_date</code> en su consulta. Ambos
+entregan la misma ventana y las mismas columnas.</p>
 <div class="section level3">
-<h3 id="rcamelspe-api-oficial">RCamelsPE (API Oficial)<a class="anchor" aria-label="anchor" href="#rcamelspe-api-oficial"></a>
+<h3 id="cómo-contribuyen-nuestras-mejoras">Cómo contribuyen nuestras mejoras<a class="anchor" aria-label="anchor" href="#c%C3%B3mo-contribuyen-nuestras-mejoras"></a>
 </h3>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Configurar ruta del dataset</span></span>
-<span><span class="fu">RCamelsPE</span><span class="fu">::</span><span class="fu">set_camels_path</span><span class="op">(</span><span class="st">"data-raw/CAMELS-PE"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Cargar metadatos</span></span>
-<span><span class="va">stations</span> <span class="op">&lt;-</span> <span class="fu">RCamelsPE</span><span class="fu">::</span><span class="fu">read_metadata</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Cargar atributos y filtrar cuencas seleccionadas</span></span>
-<span><span class="va">attrs</span> <span class="op">&lt;-</span> <span class="fu">RCamelsPE</span><span class="fu">::</span><span class="fu">read_attributes</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"all"</span>, gauge_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PE_212900"</span>, <span class="st">"PE_200907"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Cargar serie de tiempo filtrada</span></span>
-<span><span class="va">ts</span> <span class="op">&lt;-</span> <span class="fu">RCamelsPE</span><span class="fu">::</span><span class="fu">read_timeseries</span><span class="op">(</span>gauge_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PE_212900"</span>, <span class="st">"PE_200907"</span><span class="op">)</span>, vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="st">"prec"</span>, <span class="st">"flow_obs"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li>
+<strong>Lectura selectiva:</strong>
+<code><a href="https://arrow.apache.org/docs/r/reference/read_delim_arrow.html" class="external-link">arrow::read_csv_arrow()</a></code> proyecta columnas para consultas
+pequeñas. En la ruta nacional, <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html" class="external-link">arrow::open_dataset()</a></code> aplica
+selección y filtros antes de materializar el <code>data.frame</code>
+final.</li>
+<li>
+<strong>Uniones y lotes:</strong> <code><a href="https://fastverse.org/collapse/reference/join.html" class="external-link">collapse::join()</a></code>
+combina atributos y <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">dplyr::bind_rows()</a></code> reúne archivos
+individuales conservando sus tipos. Se reemplazó
+<code><a href="https://fastverse.org/collapse/reference/rowbind.html" class="external-link">collapse::rowbind()</a></code> tras detectar atributos corruptos en
+lotes repetidos de diez cuencas durante la verificación.</li>
+<li>
+<strong>Consulta temporal integrada:</strong> los límites de fecha
+se validan en el lector, facilitando ventanas de trabajo
+reproducibles.</li>
+<li>
+<strong>Control de lectura:</strong> <code>global = TRUE</code>
+permite elegir el maestro; <code>date</code> y <code>gauge_id</code>
+pueden incluirse en la selección de variables.</li>
+</ul>
+<p>CSV es texto: proyectar y filtrar <strong>no implica saltarse
+físicamente todos los bytes o filas descartados</strong>, como podría
+ocurrir con datos columnarios particionados. El beneficio se evalúa con
+los resultados, sin equipararlo a una reducción proporcional de lectura
+del disco.</p>
+<p>La descarga de CAMELS-PE 1.0.1, el respeto de <code>version</code> y
+<code>set_path</code> y la protección frente a descargas parciales
+mejoran el uso del paquete, pero no intervienen en estos tiempos. Se
+excluye la red para separar lectura local y conexión.</p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="comprobación-de-equivalencia">Comprobación de equivalencia<a class="anchor" aria-label="anchor" href="#comprobaci%C3%B3n-de-equivalencia"></a>
+</h2>
+<p>Antes del cronómetro, el script crea copias independientes para no
+alterar los resultados de los lectores. Ordena filas por
+<code>gauge_id</code> y <code>date</code>, ordena las columnas y
+normaliza contenedores (<code>tibble</code>/<code>data.frame</code>) y
+representaciones numéricas. Compara <strong>todas las columnas</strong>,
+con tolerancia numérica <code>1e-8</code>, conservando los valores
+faltantes. En objetos espaciales verifica geometrías y sistema de
+referencia. Una discrepancia detiene la ejecución. Esta validación no
+forma parte del tiempo medido.</p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Escenario</th>
+<th align="right">Filas</th>
+<th align="right">Columnas</th>
+<th align="left">Equivalente</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Metadatos: 136 estaciones</td>
+<td align="right">136</td>
+<td align="right">15</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="even">
+<td align="left">Atributos: siete tablas</td>
+<td align="right">136</td>
+<td align="right">65</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="odd">
+<td align="left">Una cuenca: todas las variables</td>
+<td align="right">16436</td>
+<td align="right">12</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="even">
+<td align="left">Cinco cuencas: dos variables</td>
+<td align="right">82180</td>
+<td align="right">4</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="odd">
+<td align="left">Diez cuencas: dos variables</td>
+<td align="right">164360</td>
+<td align="right">4</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="even">
+<td align="left">Veinte cuencas: dos variables</td>
+<td align="right">328720</td>
+<td align="right">4</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="odd">
+<td align="left">Cuarenta cuencas: dos variables</td>
+<td align="right">657440</td>
+<td align="right">4</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="even">
+<td align="left">Nacional: todas las variables</td>
+<td align="right">2235296</td>
+<td align="right">12</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="odd">
+<td align="left">Nacional: dos variables</td>
+<td align="right">2235296</td>
+<td align="right">4</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="even">
+<td align="left">Nacional: dos variables, año 2000</td>
+<td align="right">49776</td>
+<td align="right">4</td>
+<td align="left">Sí</td>
+</tr>
+<tr class="odd">
+<td align="left">Geoespacial: estaciones</td>
+<td align="right">136</td>
+<td align="right">14</td>
+<td align="left">Sí</td>
+</tr>
+</tbody>
+</table>
+<p>CAMELS-PE usa el calendario común 1981–2025. <code>flow_obs</code> y
+<code>flow_sim</code> están en mm/día y <code>prec_var</code> es
+varianza de precipitación. Los <code>NA</code> permanecen como
+faltantes: no se rellenan para mejorar los tiempos. El conjunto local se
+identifica mediante hashes; no se le atribuye una versión de Zenodo sin
+verificar su procedencia.</p>
+<p>La tabla de equivalencia describe los archivos efectivamente medidos,
+no una certificación del contenido de una publicación. Por ejemplo, el
+número de columnas de la unión de atributos incluye
+<code>gauge_id</code> y debe interpretarse según el diccionario local,
+sin sustituirlo por el total anunciado de otra versión.</p>
 <div class="section level3">
-<h3 id="rcamelspe-nuestra-versión-optimizada">rcamelspe (Nuestra versión optimizada)<a class="anchor" aria-label="anchor" href="#rcamelspe-nuestra-versi%C3%B3n-optimizada"></a>
+<h3 id="qué-sabemos-sobre-memoria">Qué sabemos sobre memoria<a class="anchor" aria-label="anchor" href="#qu%C3%A9-sabemos-sobre-memoria"></a>
 </h3>
+<p>Se conserva <code><a href="https://rdrr.io/r/utils/object.size.html" class="external-link">object.size()</a></code> de la salida en
+<code>equivalence.csv</code>. <strong>No mide el pico de RAM ni
+asignaciones temporales</strong>. Arrow puede asignar memoria fuera del
+gestor de R; un perfil de asignaciones de R tampoco bastaría para
+comparar consumo total. No se afirma un ahorro porcentual de memoria sin
+medirlo a nivel del proceso.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="método-reproducible">Método reproducible<a class="anchor" aria-label="anchor" href="#m%C3%A9todo-reproducible"></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>Ambos paquetes se cargan antes de medir y leen el mismo directorio
+local.</li>
+<li>Se eligen los primeros identificadores ordenados alfabéticamente,
+evitando seleccionar manualmente cuencas favorables.</li>
+<li>Se fijan dos hilos tanto para Arrow como para
+<code>readr</code>.</li>
+<li>Se ejecuta un calentamiento por paquete y escenario, utilizado
+también para verificar equivalencia. La prueba es de <strong>caché
+caliente</strong>: no se vacía la caché del sistema operativo.</li>
+<li>Se realizan siete repeticiones, aleatorizando el orden de los
+paquetes en cada par con semilla <code>20260905</code>. La recolección
+explícita de basura ocurre antes del cronómetro; la que ocurra dentro de
+la llamada sí queda incluida.</li>
+<li>Se registra tiempo de pared con <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time()</a></code>. Para
+metadatos y estaciones espaciales se promedian 20 llamadas por
+repetición, evitando tiempos nulos por resolución del reloj; los demás
+escenarios usan una llamada por repetición. Se excluyen instalación,
+calentamiento, validación y generación del informe.</li>
+</ol>
+<p>Referencia: <code>RCamelsPE</code> 1.0.1, revisión <a href="https://github.com/hllauca/RCamelsPE/tree/40af1422d2b9893973ffae7f4678136860f09c52" class="external-link">40af1422d2b9</a>.
+La versión local es <code>rcamelspe</code> 0.1.0 con las mejoras del
+repositorio; <code>code-manifest.csv</code> registra hashes del código
+utilizado.</p>
+<div class="section level3">
+<h3 id="volver-a-ejecutar">Volver a ejecutar<a class="anchor" aria-label="anchor" href="#volver-a-ejecutar"></a>
+</h3>
+<p>La medición intensiva es explícita: no se dispara al construir la
+documentación. Los CSV incluidos permiten regenerar esta viñeta sin
+descargar datos ni instalar el paquete de referencia. Para medir de
+nuevo, desde la raíz del repositorio:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/hllauca/RCamelsPE.git tmp/benchmark-reference</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">git</span> <span class="at">-C</span> tmp/benchmark-reference checkout 40af1422d2b9893973ffae7f4678136860f09c52</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Configurar ruta del dataset</span></span>
-<span><span class="fu">rcamelspe</span><span class="fu">::</span><span class="fu"><a href="../reference/set_camels_pe_path.html">set_camels_pe_path</a></span><span class="op">(</span><span class="st">"data-raw/CAMELS-PE"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Preparación (solo una vez):</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pkgload'</span>, <span class="st">'remotes'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_deps</span><span class="op">(</span><span class="st">'.'</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_deps</span><span class="op">(</span><span class="st">'tmp/benchmark-reference'</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># Desde una terminal, sustituir las rutas:</span></span>
+<span><span class="co"># Rscript inst/benchmarks/run-benchmark.R /datos/CAMELS-PE tmp/benchmark-reference inst/benchmarks/results 7</span></span>
 <span></span>
-<span><span class="co"># Cargar metadatos</span></span>
-<span><span class="va">stations</span> <span class="op">&lt;-</span> <span class="fu">rcamelspe</span><span class="fu">::</span><span class="fu"><a href="../reference/load_pe_metadata.html">load_pe_metadata</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"stations"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Cargar atributos</span></span>
-<span><span class="va">attrs</span> <span class="op">&lt;-</span> <span class="fu">rcamelspe</span><span class="fu">::</span><span class="fu"><a href="../reference/load_pe_attributes.html">load_pe_attributes</a></span><span class="op">(</span>attributes <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Cargar serie de tiempo con rendimiento óptimo</span></span>
-<span><span class="va">ts</span> <span class="op">&lt;-</span> <span class="fu">rcamelspe</span><span class="fu">::</span><span class="fu"><a href="../reference/load_pe_timeseries.html">load_pe_timeseries</a></span><span class="op">(</span>gauge_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PE_212900"</span>, <span class="st">"PE_200907"</span><span class="op">)</span>, variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"prec"</span>, <span class="st">"flow_obs"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<hr>
+<span><span class="fu">rmarkdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">render</a></span><span class="op">(</span><span class="st">'vignettes/benchmark.Rmd'</span><span class="op">)</span></span></code></pre></div>
+<p><code>inst/benchmarks/results/</code> contiene
+<code>timings.csv</code> (cada repetición), <code>summary.csv</code>
+(estadísticos), <code>equivalence.csv</code> (verificaciones),
+<code>data-manifest.csv</code> (tamaños y hashes de entrada),
+<code>code-manifest.csv</code> (código local) y <code>session.txt</code>
+(entorno). Si se cambia la revisión de referencia, hay que actualizar
+<code>upstream-commit.txt</code> junto con los resultados.</p>
+<pre><code><span><span class="co">#&gt; UTC:  2026-09-05 02:54:14 </span></span>
+<span><span class="co">#&gt; Repetitions:  7 </span></span>
+<span><span class="co">#&gt; Threads: Arrow=2, readr=2</span></span>
+<span><span class="co">#&gt; Timer: Sys.time; metadata/gauges: 20 calls per repetition, others: 1.</span></span>
+<span><span class="co">#&gt; CPU:  AMD64 Family 23 Model 96 Stepping 1, AuthenticAMD </span></span>
+<span><span class="co">#&gt; Dataset: local CAMELS-PE; version not independently verified; see hashes.</span></span>
+<span><span class="co">#&gt;   sysname   release   machine </span></span>
+<span><span class="co">#&gt; "Windows"  "10 x64"  "x86-64" </span></span>
+<span><span class="co">#&gt; Logical CPUs:  6 </span></span>
+<span><span class="co">#&gt; R version 4.6.1 (2026-06-24 ucrt)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64</span></span>
+<span><span class="co">#&gt; Running under: Windows 11 x64 (build 26200)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt;   LAPACK version 3.12.1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt; [1] C</span></span>
+<span><span class="co">#&gt; system code page: 65001</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: America/Lima</span></span>
+<span><span class="co">#&gt; tzcode source: internal</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] rcamelspe_0.1.0 RCamelsPE_1.0.1 testthat_3.3.2 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;  [1] generics_0.1.4     class_7.3-24       KernSmooth_2.23-27 hms_1.1.4         </span></span>
+<span><span class="co">#&gt;  [5] magrittr_2.0.5     grid_4.6.1         RColorBrewer_1.1-3 pkgload_1.5.3     </span></span>
+<span><span class="co">#&gt;  [9] rprojroot_2.1.1    pkgbuild_1.4.8     e1071_1.7-17       brio_1.1.5        </span></span>
+<span><span class="co">#&gt; [13] DBI_1.3.0          purrr_1.2.2        scales_1.4.0       cli_3.6.6         </span></span>
+<span><span class="co">#&gt; [17] crayon_1.5.3       rlang_1.3.0        units_1.0-1        bit64_4.8.6       </span></span>
+<span><span class="co">#&gt; [21] withr_3.0.3        otel_0.2.0         tools_4.6.1        parallel_4.6.1    </span></span>
+<span><span class="co">#&gt; [25] tzdb_0.5.0         dplyr_1.2.1        ggplot2_4.0.3      assertthat_0.2.1  </span></span>
+<span><span class="co">#&gt; [29] vctrs_0.7.3        R6_2.6.1           proxy_0.4-29       lifecycle_1.0.5   </span></span>
+<span><span class="co">#&gt; [33] classInt_0.4-11    bit_4.6.0          vroom_1.7.1        arrow_25.0.1      </span></span>
+<span><span class="co">#&gt; [37] pkgconfig_2.0.3    desc_1.4.3         pillar_1.11.1      gtable_0.3.6      </span></span>
+<span><span class="co">#&gt; [41] glue_1.8.1         Rcpp_1.1.2         sf_1.1-2           collapse_2.1.8    </span></span>
+<span><span class="co">#&gt; [45] tibble_3.3.1       tidyselect_1.2.1   farver_2.1.2       readr_2.2.0       </span></span>
+<span><span class="co">#&gt; [49] compiler_4.6.1     S7_0.2.2</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
-<h2 id="conclusión">4. Conclusión<a class="anchor" aria-label="anchor" href="#conclusi%C3%B3n"></a>
+<h2 id="cómo-aprovechar-rcamelspe">Cómo aprovechar rcamelspe<a class="anchor" aria-label="anchor" href="#c%C3%B3mo-aprovechar-rcamelspe"></a>
 </h2>
-<p>El uso de <code>arrow</code> y <code>collapse</code> en
-<code>rcamelspe</code> proporciona reducciones de tiempo de ejecución
-consistentes en todas las operaciones clave, logrando un <strong>speedup
-de hasta 2.0x</strong> en la carga de metadatos y atributos, y una
-reducción del uso de memoria RAM de hasta un <strong>90%</strong> en la
-lectura de series de tiempo gracias a la proyección de columnas. Esto
-hace que <code>rcamelspe</code> sea ideal para flujos de trabajo de
-modelamiento hidrológico y análisis de grandes muestras de datos en
-R.</p>
+<p>Solicita las variables y fechas necesarias, reutiliza la ruta local y
+consulta el diccionario antes del análisis. Este patrón aprovecha la
+lectura selectiva:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu">rcamelspe</span><span class="fu">::</span><span class="fu"><a href="../reference/get_camels_pe_path.html">get_camels_pe_path</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">daily</span> <span class="op">&lt;-</span> <span class="fu">rcamelspe</span><span class="fu">::</span><span class="fu"><a href="../reference/read_timeseries.html">read_timeseries</a></span><span class="op">(</span></span>
+<span>  global <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'date'</span>, <span class="st">'gauge_id'</span>, <span class="st">'prec'</span>, <span class="st">'flow_obs'</span><span class="op">)</span>,</span>
+<span>  start_date <span class="op">=</span> <span class="st">'2000-01-01'</span>, end_date <span class="op">=</span> <span class="st">'2000-12-31'</span>, path <span class="op">=</span> <span class="va">path</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>La elección depende del escenario. Consultas selectivas y lotes
+muestran el valor del motor de lectura; operaciones pequeñas o basadas
+en el mismo lector espacial pueden tener diferencias reducidas. La tabla
+completa permite justificar esa elección sin extrapolar la aceleración
+máxima a todo el paquete.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

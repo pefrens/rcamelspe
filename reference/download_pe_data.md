@@ -1,7 +1,7 @@
 # Download the CAMELS-PE dataset from Zenodo
 
 Downloads the CAMELS-PE dataset zip file from the Zenodo repository
-([doi:10.5281/zenodo.20058779](https://doi.org/10.5281/zenodo.20058779)
+([doi:10.5281/zenodo.21195425](https://doi.org/10.5281/zenodo.21195425)
 ) and extracts it in the destination folder.
 
 ## Usage
@@ -11,7 +11,9 @@ download_pe_data(
   dest_dir = tools::R_user_dir("rcamelspe", which = "data"),
   unzip = TRUE,
   overwrite = FALSE,
-  quiet = FALSE
+  quiet = FALSE,
+  version = "1.0.1",
+  set_path = TRUE
 )
 ```
 
@@ -36,10 +38,20 @@ download_pe_data(
 
   Logical. Should download progress be suppressed? Default is `FALSE`.
 
+- version:
+
+  Character string. Dataset release: `"1.0.1"` (default) or `"1.0"`.
+
+- set_path:
+
+  Logical. Configure the session path after extraction only.
+
 ## Value
 
 Character string indicating the directory path where the dataset is
-located or extracted.
+located or extracted; the ZIP path when `unzip = FALSE`. Use a separate
+destination for each release, or `overwrite = TRUE` to replace an
+existing extraction.
 
 ## Examples
 

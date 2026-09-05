@@ -16,8 +16,11 @@ memory footprint, the package is engineered using: - **`arrow`**: for
 memory-mapped dataset reading, predicate pushdown (filtering stations
 and dates directly at the C++ scan level), and zero-overhead column
 projection. - **`collapse`**: for fast C/C++ data frame transformations,
-grouped calculations, row binding, and relational joins. - **`RCamelsPE`
-compatibility**: full drop-in compatibility and aliases
+grouped calculations, and relational joins. Individual time-series
+batches use
+[`dplyr::bind_rows()`](https://dplyr.tidyverse.org/reference/bind_rows.html)
+for stable output types. - **`RCamelsPE` compatibility**: convenience
+wrappers and aliases
 ([`read_timeseries()`](https://pefrens.github.io/rcamelspe/reference/read_timeseries.md),
 [`read_attributes()`](https://pefrens.github.io/rcamelspe/reference/read_attributes.md),
 [`read_metadata()`](https://pefrens.github.io/rcamelspe/reference/read_metadata.md),
@@ -30,7 +33,7 @@ compatibility**: full drop-in compatibility and aliases
 
 ## Installation
 
-You can install the released version of `rcamelspe` from CRAN with:
+When available on CRAN, install with:
 
 ``` r
 
@@ -57,14 +60,14 @@ downloads.
 
 When you are ready to work with the complete 136-catchment dataset
 (approx. 120 MB zip, extracting to 186 MB), you can download it directly
-from Zenodo (DOI: 10.5281/zenodo.20058779):
+from Zenodo (DOI: 10.5281/zenodo.21195425):
 
 ``` r
 
 library(rcamelspe)
 
 # Download and extract the full dataset to user data directory
-download_pe_data()
+download_pe_data(version = "1.0.1")
 ```
 
 ------------------------------------------------------------------------
@@ -86,13 +89,9 @@ dictionary:
 # Gauging stations
 stations <- load_pe_metadata(type = "stations")
 head(stations[, c("gauge_id", "gauge_name", "gauge_region", "gauge_elev")])
-#>      gauge_id             gauge_name gauge_region gauge_elev
-#> 1 PE_472A9204                 Chilca     Atlantic       2770
-#> 2   PE_210003             Huancasaya     Titicaca       4327
-#> 3   PE_204617               Huatiapa      Pacific        684
-#> 4 PE_472935F2      Intihuatana Km105     Atlantic       2166
-#> 5   PE_210406 Puente Isla Cabanillas     Titicaca       3837
-#> 6   PE_270503       Puente Zapatilla     Titicaca       3836
+#>    gauge_id       gauge_name gauge_region gauge_elev
+#> 1 PE_110139            Picoy      Pacific       3037
+#> 2 PE_111151 Puente Magdalena      Pacific        872
 
 # Data dictionary
 dict <- read_dictionary(category = "climatic")
@@ -118,13 +117,9 @@ hydrological signatures, or human intervention attributes:
 # Load merged topographic and landcover attributes
 attrs <- load_pe_attributes(c("topographic", "landcover"))
 head(attrs[, c("gauge_id", "area", "elev_mean", "forest_perc")])
-#>      gauge_id      area elev_mean forest_perc
-#> 1 PE_472A9204  9187.868  4210.225       1.389
-#> 2   PE_210003  2008.790  4659.078       0.050
-#> 3   PE_204617 13224.802  4213.036       1.373
-#> 4 PE_472935F2  9576.154  4196.945       1.876
-#> 5   PE_210406  2867.025  4467.149       0.000
-#> 6   PE_270503   390.800  3990.867       0.000
+#>    gauge_id     area elev_mean forest_perc
+#> 1 PE_110139  360.584  4534.981       1.827
+#> 2 PE_111151 1263.804  3542.298       3.511
 ```
 
 ------------------------------------------------------------------------
@@ -175,9 +170,9 @@ p_map <- plot_pe_catchments(catchments, gauges = gauges)
 
 ------------------------------------------------------------------------
 
-### 5. Full Drop-in Compatibility with `RCamelsPE`
+### 5. Compatibility Wrappers with `RCamelsPE`
 
-Existing scripts written for `RCamelsPE` run without any modifications:
+The following wrappers support common `RCamelsPE` workflows:
 
 ``` r
 
@@ -188,6 +183,74 @@ attrs    <- read_attributes(type = "topographic")
 ts       <- read_timeseries(gauge_id = "PE_110139", vars = c("date", "prec", "flow_obs"))
 spatial  <- read_geospatial(type = "catchments")
 ```
+
+## CAMELS-PE data reference
+
+CAMELS-PE v1.0.1, produced by SENAMHI, describes **136 catchments**: 67
+Pacific, 56 Atlantic and 13 Titicaca. It provides **79 static
+attributes** in seven thematic groups and **10 daily variables** on the
+1981-2025 calendar. The calendar does not imply complete observations:
+unavailable dates remain `NA`. Check `gauge_record_start`,
+`gauge_record_end` and `gauge_perc_obs` in station metadata.
+Hydrological signatures are derived from **simulated streamflow**.
+Spatial layers are GeoPackages in WGS84 (EPSG:4326), linked by
+`gauge_id`.
+
+| Daily variable | Meaning | Unit | Source |
+|----|----|----|----|
+| `prec` | Precipitation | mm/day | PISCOp v2.1 |
+| `prec_var` | Precipitation variance | mm²/day² | PISCOp v2.1 |
+| `pet` | Potential evapotranspiration | mm/day | PISCOeo_pm v1.0 |
+| `tmin`, `tmean`, `tmax` | Minimum, mean and maximum temperature | °C | PISCOt v1.2 |
+| `srad` | Surface solar radiation | MJ/m²/day | ERA5-Land |
+| `vprp` | Vapor pressure | hPa | ERA5-Land |
+| `flow_obs` | Observed streamflow | mm/day | SENAMHI |
+| `flow_sim` | Simulated streamflow | mm/day | PISCO-ARNOVIC v1.1 |
+
+Attribute sources are FABDEM v1.2 (topography), MapBiomas Peru and
+Ecuador (land cover), GLiM v1.0 and GLHYMPS v2.0 (geology), DSOLMap
+(soil orders), and ANA (human intervention). Consult
+[`read_dictionary()`](https://pefrens.github.io/rcamelspe/reference/read_dictionary.md)
+for file-level definitions.
+
+### Batch access
+
+``` r
+
+# Explicitly use the bundled two-catchment, year-2000 sample
+sample_path <- system.file("extdata", "sample_camels_pe", package = "rcamelspe")
+stations <- read_metadata(path = sample_path)
+daily <- read_timeseries(
+  gauge_id = stations$gauge_id, global = TRUE,
+  vars = c("date", "prec", "prec_var", "flow_obs", "flow_sim"),
+  start_date = "2000-01-01", end_date = "2000-01-31", path = sample_path
+)
+# For the full release, use the directory returned by download_pe_data().
+```
+
+### Sources, license and citation
+
+The data (including the bundled subset) are licensed under **CC BY
+4.0**; the `rcamelspe` package code uses the license in DESCRIPTION.
+This package is a separate project from Harold Llauca’s
+[RCamelsPE](https://github.com/hllauca/RCamelsPE), linked by SENAMHI.
+
+Official references: [CAMELS-PE
+portal](https://www.senamhi.gob.pe/camels-pe/) and [technical
+description](https://zenodo.org/records/21195425/files/CAMELS-PE_Technical_Data_Description.pdf).
+
+When using CAMELS-PE, cite both:
+
+- Llauca, H., Montesinos-Caceres, C., Gutierrez-Reynaga, M., &
+  Lavado-Casimiro, W. (2026). CAMELS-PE: Hydrometeorological time series
+  and catchment attributes for 136 catchments in Peru \[Preprint\].
+  Earth System Science Data Discussions.
+  [doi:10.5194/essd-2026-386](https://doi.org/10.5194/essd-2026-386).
+- Llauca, H., Montesinos-Caceres, C., Gutierrez-Reynaga, M., &
+  Lavado-Casimiro, W. (2026). CAMELS-PE: Catchment Attributes and
+  Meteorology for Large-sample Studies in Peru (Version 1.0.1) \[Data
+  set\]. Zenodo.
+  [doi:10.5281/zenodo.21195425](https://doi.org/10.5281/zenodo.21195425).
 
 # Package index
 
@@ -255,7 +318,7 @@ migration.
 
 ### All vignettes
 
-- [Benchmark de Eficiencia: rcamelspe vs
+- [Rendimiento de rcamelspe: comparación reproducible con
   RCamelsPE](https://pefrens.github.io/rcamelspe/articles/benchmark.md):
 - [Regionalización Hidroclimática de Cuencas en el
   Perú](https://pefrens.github.io/rcamelspe/articles/regionalization.md):

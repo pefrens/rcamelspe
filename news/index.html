@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/benchmark.html">Benchmark de Eficiencia: rcamelspe vs RCamelsPE</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/benchmark.html">Rendimiento de rcamelspe: comparación reproducible con RCamelsPE</a></li>
     <li><a class="dropdown-item" href="../articles/regionalization.html">Regionalización Hidroclimática de Cuencas en el Perú</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -37,6 +37,16 @@
       <small>Source: <a href="https://github.com/pefrens/rcamelspe/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="rcamelspe-development-version">rcamelspe (development version)<a class="anchor" aria-label="anchor" href="#rcamelspe-development-version"></a></h2>
+<ul><li><p>Replace the five-catchment routing cutoff with a CSV-size and opening-cost estimate, avoiding unnecessary national scans for medium-sized selections. Missing individual files fall back to the master; selections also work when only individual CSVs are installed. Repeated gauge IDs are deduplicated.</p></li>
+<li><p>Bind individual time-series tables with <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">dplyr::bind_rows()</a></code> to avoid corrupt result attributes encountered in repeated larger batches with <code><a href="https://fastverse.org/collapse/reference/rowbind.html" class="external-link">collapse::rowbind()</a></code>.</p></li>
+<li><p>Default downloads now use CAMELS-PE 1.0.1 (Zenodo 21195425); 1.0 remains selectable.</p></li>
+<li><p>Download wrappers honor <code>version</code> and <code>set_path</code>. Archive-only downloads return the ZIP path and do not configure an unextracted data directory.</p></li>
+<li><p>Failed downloads no longer leave a partial file under the cached archive name.</p></li>
+<li><p>Time-series wrappers honor <code>global</code>, accept identifier columns and validate date bounds.</p></li>
+<li><p>Document all ten daily variables, units, sources, coverage, simulated signatures, dataset attribution and the distinction from the upstream RCamelsPE package.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="rcamelspe-010">rcamelspe 0.1.0<a class="anchor" aria-label="anchor" href="#rcamelspe-010"></a></h2>
 <ul><li>Initial release of <code>rcamelspe</code>.</li>
@@ -60,7 +70,8 @@
 <code><a href="../reference/plot_pe_attribute_map.html">plot_pe_attribute_map()</a></code> for choropleth mapping of catchment attributes.</li>
 </ul></li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
