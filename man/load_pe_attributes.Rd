@@ -35,6 +35,10 @@ as primary identifier.
 Loads one or more catchment attribute files and merges them by \code{gauge_id}.
 High-performance implementation using 'arrow' and 'collapse'.
 }
+\details{
+CAMELS-PE v1.0.1 documents 79 attributes in seven thematic tables.
+Hydrological signatures are derived from simulated streamflow, not observations.
+}
 \examples{
 # Load all attributes merged
 attrs_all <- load_pe_attributes()

@@ -9,3 +9,4 @@ raw-data/
 .agent/
 *.tar.gz
 *.Rcheck/
+tmp/

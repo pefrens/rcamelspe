@@ -12,3 +12,4 @@
 ^data-raw$
 ^compare_repo$
 ^\.agent$
+^tmp$

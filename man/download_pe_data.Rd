@@ -8,7 +8,9 @@ download_pe_data(
   dest_dir = tools::R_user_dir("rcamelspe", which = "data"),
   unzip = TRUE,
   overwrite = FALSE,
-  quiet = FALSE
+  quiet = FALSE,
+  version = "1.0.1",
+  set_path = TRUE
 )
 }
 \arguments{
@@ -22,14 +24,19 @@ saved. Defaults to the persistent user data directory
 Default is \code{FALSE}.}
 
 \item{quiet}{Logical. Should download progress be suppressed? Default is \code{FALSE}.}
+
+\item{version}{Character string. Dataset release: \code{"1.0.1"} (default) or \code{"1.0"}.}
+
+\item{set_path}{Logical. Configure the session path after extraction only.}
 }
 \value{
 Character string indicating the directory path where the dataset is located
-or extracted.
+or extracted; the ZIP path when \code{unzip = FALSE}. Use a separate destination
+for each release, or \code{overwrite = TRUE} to replace an existing extraction.
 }
 \description{
 Downloads the CAMELS-PE dataset zip file from the Zenodo repository
-(\doi{10.5281/zenodo.20058779}) and extracts it in the destination folder.
+(\doi{10.5281/zenodo.21195425}) and extracts it in the destination folder.
 }
 \examples{
 \dontrun{

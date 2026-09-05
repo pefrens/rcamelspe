@@ -2,6 +2,8 @@
 #'
 #' Loads one or more catchment attribute files and merges them by `gauge_id`.
 #' High-performance implementation using 'arrow' and 'collapse'.
+#' @details CAMELS-PE v1.0.1 documents 79 attributes in seven thematic tables.
+#'   Hydrological signatures are derived from simulated streamflow, not observations.
 #'
 #' @param attributes Character vector. The attribute groups to load. Can be any combination of
 #'   `"topographic"`, `"climatic"`, `"geologic"`, `"soil"`, `"landcover"`, `"intervention"`,

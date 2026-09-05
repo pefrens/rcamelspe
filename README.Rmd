@@ -26,14 +26,14 @@ CAMELS-PE includes daily meteorological and hydrological time series, static cat
 
 To handle large volumes of records (over 2.2 million rows of daily climate observations and simulations) with maximum speed and minimum memory footprint, the package is engineered using:
 - **`arrow`**: for memory-mapped dataset reading, predicate pushdown (filtering stations and dates directly at the C++ scan level), and zero-overhead column projection.
-- **`collapse`**: for fast C/C++ data frame transformations, grouped calculations, row binding, and relational joins.
-- **`RCamelsPE` compatibility**: full drop-in compatibility and aliases (`read_timeseries()`, `read_attributes()`, `read_metadata()`, `read_dictionary()`, `read_geospatial()`, `set_camels_path()`, `get_camels_path()`).
+- **`collapse`**: for fast C/C++ data frame transformations, grouped calculations, and relational joins. Individual time-series batches use `dplyr::bind_rows()` for stable output types.
+- **`RCamelsPE` compatibility**: convenience wrappers and aliases (`read_timeseries()`, `read_attributes()`, `read_metadata()`, `read_dictionary()`, `read_geospatial()`, `set_camels_path()`, `get_camels_path()`).
 
 ---
 
 ## Installation
 
-You can install the released version of `rcamelspe` from CRAN with:
+When available on CRAN, install with:
 
 ```r
 install.packages("rcamelspe")
@@ -52,13 +52,13 @@ pak::pak("pefrens/rcamelspe")
 
 `rcamelspe` includes a lightweight, self-contained sample dataset in `inst/extdata/sample_camels_pe` (~120 KB) covering 2 representative catchments (`PE_110139` and `PE_111151`). This allows you to explore all functions immediately after installation without waiting for large downloads.
 
-When you are ready to work with the complete 136-catchment dataset (approx. 120 MB zip, extracting to 186 MB), you can download it directly from Zenodo (DOI: 10.5281/zenodo.20058779):
+When you are ready to work with the complete 136-catchment dataset (approx. 120 MB zip, extracting to 186 MB), you can download it directly from Zenodo (DOI: 10.5281/zenodo.21195425):
 
 ```r
 library(rcamelspe)
 
 # Download and extract the full dataset to user data directory
-download_pe_data()
+download_pe_data(version = "1.0.1")
 ```
 
 ---
@@ -132,9 +132,9 @@ p_map <- plot_pe_catchments(catchments, gauges = gauges)
 
 ---
 
-### 5. Full Drop-in Compatibility with `RCamelsPE`
+### 5. Compatibility Wrappers with `RCamelsPE`
 
-Existing scripts written for `RCamelsPE` run without any modifications:
+The following wrappers support common `RCamelsPE` workflows:
 
 ```r
 # Compatible syntax:
@@ -144,3 +144,63 @@ attrs    <- read_attributes(type = "topographic")
 ts       <- read_timeseries(gauge_id = "PE_110139", vars = c("date", "prec", "flow_obs"))
 spatial  <- read_geospatial(type = "catchments")
 ```
+
+## CAMELS-PE data reference
+
+CAMELS-PE v1.0.1, produced by SENAMHI, describes **136 catchments**:
+67 Pacific, 56 Atlantic and 13 Titicaca. It provides **79 static attributes**
+in seven thematic groups and **10 daily variables** on the 1981-2025 calendar.
+The calendar does not imply complete observations: unavailable dates remain `NA`.
+Check `gauge_record_start`, `gauge_record_end` and `gauge_perc_obs` in station metadata.
+Hydrological signatures are derived from **simulated streamflow**.
+Spatial layers are GeoPackages in WGS84 (EPSG:4326), linked by `gauge_id`.
+
+| Daily variable | Meaning | Unit | Source |
+|---|---|---|---|
+| `prec` | Precipitation | mm/day | PISCOp v2.1 |
+| `prec_var` | Precipitation variance | mm²/day² | PISCOp v2.1 |
+| `pet` | Potential evapotranspiration | mm/day | PISCOeo_pm v1.0 |
+| `tmin`, `tmean`, `tmax` | Minimum, mean and maximum temperature | °C | PISCOt v1.2 |
+| `srad` | Surface solar radiation | MJ/m²/day | ERA5-Land |
+| `vprp` | Vapor pressure | hPa | ERA5-Land |
+| `flow_obs` | Observed streamflow | mm/day | SENAMHI |
+| `flow_sim` | Simulated streamflow | mm/day | PISCO-ARNOVIC v1.1 |
+
+Attribute sources are FABDEM v1.2 (topography), MapBiomas Peru and Ecuador
+(land cover), GLiM v1.0 and GLHYMPS v2.0 (geology), DSOLMap (soil orders),
+and ANA (human intervention). Consult `read_dictionary()` for file-level definitions.
+
+### Batch access
+
+```r
+# Explicitly use the bundled two-catchment, year-2000 sample
+sample_path <- system.file("extdata", "sample_camels_pe", package = "rcamelspe")
+stations <- read_metadata(path = sample_path)
+daily <- read_timeseries(
+  gauge_id = stations$gauge_id, global = TRUE,
+  vars = c("date", "prec", "prec_var", "flow_obs", "flow_sim"),
+  start_date = "2000-01-01", end_date = "2000-01-31", path = sample_path
+)
+# For the full release, use the directory returned by download_pe_data().
+```
+
+### Sources, license and citation
+
+The data (including the bundled subset) are licensed under **CC BY 4.0**;
+the `rcamelspe` package code uses the license in DESCRIPTION.
+This package is a separate project from Harold Llauca's
+[RCamelsPE](https://github.com/hllauca/RCamelsPE), linked by SENAMHI.
+
+Official references: [CAMELS-PE portal](https://www.senamhi.gob.pe/camels-pe/)
+and [technical description](https://zenodo.org/records/21195425/files/CAMELS-PE_Technical_Data_Description.pdf).
+
+When using CAMELS-PE, cite both:
+
+- Llauca, H., Montesinos-Caceres, C., Gutierrez-Reynaga, M., & Lavado-Casimiro, W.
+  (2026). CAMELS-PE: Hydrometeorological time series and catchment attributes for
+  136 catchments in Peru [Preprint]. Earth System Science Data Discussions.
+  [doi:10.5194/essd-2026-386](https://doi.org/10.5194/essd-2026-386).
+- Llauca, H., Montesinos-Caceres, C., Gutierrez-Reynaga, M., & Lavado-Casimiro, W.
+  (2026). CAMELS-PE: Catchment Attributes and Meteorology for Large-sample Studies
+  in Peru (Version 1.0.1) [Data set]. Zenodo.
+  [doi:10.5281/zenodo.21195425](https://doi.org/10.5281/zenodo.21195425).

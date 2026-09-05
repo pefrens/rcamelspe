@@ -12,7 +12,10 @@ Description: Download, load, manage, and filter the Catchment Attributes and
     hydroclimatic and hydrological analysis. Offers high-performance reading
     and manipulation of large datasets using the 'arrow' and 'collapse'
     packages. Provides tools to extract catchment-scale meteorological time
-    series, physical attributes, and spatial boundaries.
+    series, physical attributes, and spatial boundaries for 136 catchments,
+    with 10 daily variables on the 1981-2025 calendar and 79 attributes.
+    CAMELS-PE data are distributed separately under CC BY 4.0
+    <doi:10.5281/zenodo.21195425>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

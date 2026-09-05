@@ -11,7 +11,8 @@ load_pe_timeseries(
   end_date = NULL,
   path = get_camels_pe_path(),
   parse_dates = TRUE,
-  use_arrow = TRUE
+  use_arrow = TRUE,
+  global = FALSE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ Default is \code{TRUE}.}
 
 \item{use_arrow}{Logical. Should the 'arrow' package be used for reading?
 Default is \code{TRUE} (recommended for high performance).}
+
+\item{global}{Logical. If \code{TRUE}, read the master CSV even for a small selection.}
 }
 \value{
 A \code{data.frame} containing daily hydroclimatic timeseries data with at least
@@ -46,11 +49,22 @@ A \code{data.frame} containing daily hydroclimatic timeseries data with at least
 Efficiently loads daily hydroclimatic timeseries for Peruvian catchments.
 Features an optimized dual-pathway execution engine using 'arrow' and 'collapse':
 \itemize{
-\item For few catchments (<= 5), reads individual catchment files with column projection.
+\item For selective requests, reads individual catchment files with column projection.
 \item For global or multi-catchment requests, uses \code{arrow::open_dataset()} with
 predicate pushdown (filtering stations and date ranges directly at scan time)
 to minimize memory footprint and maximize throughput.
 }
+}
+\details{
+The common calendar is 1981-2025; unavailable observations remain \code{NA}.
+Streamflow is expressed in mm/day, precipitation variance (\code{prec_var}) in
+mm^2/day^2, solar radiation in MJ/m^2/day, and vapor pressure in hPa.
+Identifier columns \code{date} and \code{gauge_id} may also be requested in \code{variables}.
+Automatic routing compares selected CSV bytes plus a 4 MiB per-file opening
+cost estimate against the master CSV size. This heuristic avoids scanning
+the national file for small subsets while retaining it for large requests.
+Missing individual files fall back to the master when it is available.
+\code{global = TRUE} always forces the master. No data cache is created.
 }
 \examples{
 # Load timeseries for a specific station

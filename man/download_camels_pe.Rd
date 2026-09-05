@@ -6,7 +6,7 @@
 \usage{
 download_camels_pe(
   path,
-  version = "1.0",
+  version = "1.0.1",
   unzip = TRUE,
   overwrite = FALSE,
   set_path = TRUE
@@ -15,7 +15,7 @@ download_camels_pe(
 \arguments{
 \item{path}{Character string. Destination directory where dataset will be stored.}
 
-\item{version}{Character string. Dataset version. Default is \code{"1.0"}.}
+\item{version}{Character string. Dataset release: \code{"1.0.1"} (default) or \code{"1.0"}.}
 
 \item{unzip}{Logical. Should the downloaded file be extracted? Default is \code{TRUE}.}
 

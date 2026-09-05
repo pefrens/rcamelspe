@@ -3,7 +3,7 @@
 #' Efficiently loads daily hydroclimatic timeseries for Peruvian catchments.
 #' Features an optimized dual-pathway execution engine using 'arrow' and 'collapse':
 #' \itemize{
-#'   \item For few catchments (<= 5), reads individual catchment files with column projection.
+#'   \item For selective requests, reads individual catchment files with column projection.
 #'   \item For global or multi-catchment requests, uses `arrow::open_dataset()` with
 #'         predicate pushdown (filtering stations and date ranges directly at scan time)
 #'         to minimize memory footprint and maximize throughput.
@@ -25,6 +25,16 @@
 #'   Default is `TRUE`.
 #' @param use_arrow Logical. Should the 'arrow' package be used for reading?
 #'   Default is `TRUE` (recommended for high performance).
+#' @param global Logical. If `TRUE`, read the master CSV even for a small selection.
+#' @details The common calendar is 1981-2025; unavailable observations remain `NA`.
+#'   Streamflow is expressed in mm/day, precipitation variance (`prec_var`) in
+#'   mm^2/day^2, solar radiation in MJ/m^2/day, and vapor pressure in hPa.
+#'   Identifier columns `date` and `gauge_id` may also be requested in `variables`.
+#'   Automatic routing compares selected CSV bytes plus a 4 MiB per-file opening
+#'   cost estimate against the master CSV size. This heuristic avoids scanning
+#'   the national file for small subsets while retaining it for large requests.
+#'   Missing individual files fall back to the master when it is available.
+#'   `global = TRUE` always forces the master. No data cache is created.
 #'
 #' @return A `data.frame` containing daily hydroclimatic timeseries data with at least
 #'   `date` and `gauge_id` columns, plus the requested hydrometeorological variables.
@@ -49,7 +59,8 @@ load_pe_timeseries <- function(gauge_ids = NULL,
                                end_date = NULL,
                                path = get_camels_pe_path(),
                                parse_dates = TRUE,
-                               use_arrow = TRUE) {
+                               use_arrow = TRUE,
+                               global = FALSE) {
   if (is.null(path) || !dir.exists(path)) {
     cli::cli_abort(c(
       "CAMELS-PE dataset path not found or invalid.",
@@ -63,7 +74,11 @@ load_pe_timeseries <- function(gauge_ids = NULL,
   )
 
   if (!is.null(variables)) {
-    variables <- match.arg(variables, choices = valid_vars, several.ok = TRUE)
+    if (!is.character(variables) || anyNA(variables) ||
+        any(!variables %in% c("date", "gauge_id", valid_vars))) {
+      cli::cli_abort("Unknown timeseries variable. Consult read_dictionary(category = 'timeseries').")
+    }
+    variables <- unique(setdiff(variables, c("date", "gauge_id")))
   }
 
   # Columns to keep (always keep date and gauge_id)
@@ -73,20 +88,37 @@ load_pe_timeseries <- function(gauge_ids = NULL,
   }
 
   # Parse date filter bounds if supplied
-  if (!is.null(start_date)) {
-    start_date <- as.Date(start_date)
+  parse_bound <- function(x) {
+    if (is.null(x)) return(NULL)
+    value <- tryCatch(as.Date(x), error = function(e) NA)
+    if (length(value) != 1L || is.na(value)) {
+      cli::cli_abort("Date bounds must be single valid dates (YYYY-MM-DD).")
+    }
+    value
   }
-  if (!is.null(end_date)) {
-    end_date <- as.Date(end_date)
+  start_date <- parse_bound(start_date)
+  end_date <- parse_bound(end_date)
+  if (!is.null(start_date) && !is.null(end_date) && start_date > end_date) {
+    cli::cli_abort("start_date must not be after end_date.")
   }
 
-  # Strategy decision:
-  # If requesting 5 or fewer stations, by_catchment individual reading is fastest
+  # Estimate scan volume plus CSV opening/inference overhead instead of a fixed
+  # station-count threshold. Only stat the requested files; do not scan metadata.
   catchment_dir <- file.path(path, "03_timeseries", "by_catchment")
-  read_by_catchment <- !is.null(gauge_ids) && length(gauge_ids) <= 5 && dir.exists(catchment_dir)
+  main_file <- file.path(path, "03_timeseries", "timeseries.csv")
+  read_by_catchment <- FALSE
+  if (!global && !is.null(gauge_ids) && dir.exists(catchment_dir)) {
+    gauge_ids <- unique(gauge_ids)
+    selected_files <- file.path(catchment_dir, paste0(gauge_ids, ".csv"))
+    sizes <- file.info(selected_files)$size
+    master_size <- file.info(main_file)$size
+    read_by_catchment <- is.na(master_size) ||
+      (all(!is.na(sizes)) && sum(sizes + 4 * 1024^2) < master_size)
+  }
 
   if (read_by_catchment) {
     loaded_dfs <- list()
+    cols_to_read <- setdiff(keep_cols, "gauge_id")
 
     for (gid in gauge_ids) {
       file_path <- file.path(catchment_dir, paste0(gid, ".csv"))
@@ -94,8 +126,6 @@ load_pe_timeseries <- function(gauge_ids = NULL,
         cli::cli_warn("Timeseries file not found for station {.val {gid}} at {.path {file_path}}")
         next
       }
-
-      cols_to_read <- setdiff(keep_cols, "gauge_id")
 
       if (use_arrow) {
         if (!is.null(variables)) {
@@ -139,7 +169,9 @@ load_pe_timeseries <- function(gauge_ids = NULL,
       return(data.frame())
     }
 
-    res_df <- collapse::rowbind(loaded_dfs)
+    # Use a type-stable binder that owns its result attributes. Repeated larger
+    # batches with collapse::rowbind() can leave invalid shared attributes.
+    res_df <- as.data.frame(dplyr::bind_rows(unname(loaded_dfs)))
 
   } else {
     # Read the main timeseries.csv file using Arrow dataset predicate pushdown
@@ -269,6 +301,7 @@ read_timeseries <- function(gauge_id = NULL,
     variables = vars,
     start_date = start_date,
     end_date = end_date,
-    path = path
+    path = path,
+    global = global
   )
 }
